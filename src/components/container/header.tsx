@@ -1,11 +1,10 @@
 'use client';
-import { IMAGES } from '@/constants';
+import { IMAGES } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 import { Menu, Search, X } from 'lucide-react';
-import Image from 'next/image';
 import React from 'react';
 import { Input } from '../ui/input';
-import FlexibleImage from './wrapper-image';
+import FlexibleImage from './image-wrapper';
 
 const ListMenu: React.FC<{ className?: string; open?: boolean }> = ({
   className,
@@ -14,7 +13,7 @@ const ListMenu: React.FC<{ className?: string; open?: boolean }> = ({
   return (
     <ul
       className={cn(
-        'flex px-4 gap-6 lg:gap-20 items-center',
+        'flex px-4 gap-6 lg:gap-20 lg:items-center',
         open && 'py-6 space-y-4 flex-col',
         className
       )}
@@ -24,8 +23,33 @@ const ListMenu: React.FC<{ className?: string; open?: boolean }> = ({
     </ul>
   );
 };
+
 const Header = () => {
   const [isOpenMenu, setOpenMenu] = React.useState<boolean>(false);
+  const [isScrolled, setIsScrolled] = React.useState(false);
+
+  React.useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 10);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  React.useEffect(() => {
+    if (isOpenMenu) {
+      document.body.style.overflow = 'hidden';
+      document.body.style.touchAction = 'none';
+    } else {
+      document.body.style.overflow = '';
+      document.body.style.touchAction = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+      document.body.style.touchAction = '';
+    };
+  }, [isOpenMenu]);
 
   return (
     <>
@@ -33,12 +57,12 @@ const Header = () => {
         className={cn(
           'flex flex-row items-center justify-between gap-4 lg:px-[140px] lg:h-[90px]',
           'fixed top-0 left-0 z-50 w-full p-4',
-          'backdrop-blur-xl',
-          'border-b border-white/20',
-          'shadow-[0_4px_20px_rgba(0,0,0,0.05)]',
-          'transition-all duration-300',
-          'supports-[backdrop-filter]:bg-transparent/60',
-          'supports-[backdrop-filter]:backdrop-blur-md'
+          'border-b border-transparent transition-all duration-300',
+          isScrolled && [
+            'backdrop-blur-xl supports-[backdrop-filter]:bg-white/70 dark:supports-[backdrop-filter]:bg-black/40',
+            'border-b border-white/20 shadow-[0_4px_20px_rgba(0,0,0,0.05)]',
+          ],
+          isOpenMenu && 'bg-black'
         )}
       >
         <div className='flex gap-4 lg:gap-20'>
@@ -52,9 +76,10 @@ const Header = () => {
         <div className='hidden lg:block w-full max-w-[243px]'>
           <Input
             label='search'
-            id='search-order'
+            id='search'
+            className='bg-[#0A0D1299]'
             iconPosition='left'
-            icon={<Search className='h-5 w-5 text-neutral-500' />}
+            icon={<Search className='size-5 text-neutral-500 ' />}
           />
         </div>
         {isOpenMenu ? (
@@ -68,10 +93,10 @@ const Header = () => {
       </header>
       <div
         className={cn(
-          'absolute lg:hidden top-[60px] left-0 w-full h-screen bg-transparent border-none z-40',
-          'transition-transform duration-300 ease-in-out',
+          'absolute lg:hidden top-[60px] left-0 w-full h-screen bg-transparent border-none z-50 overflow-hidden',
+          'transition-transform duration-300 ease-in-out bg-black',
           isOpenMenu
-            ? 'translate-x-0 opacity-100 pointer-events-auto'
+            ? 'translate-x-0 opacity-100 pointer-events-auto h-screen'
             : '-translate-x-full opacity-0 pointer-events-none'
         )}
       >

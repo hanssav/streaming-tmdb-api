@@ -59,17 +59,11 @@ function Input({
           htmlFor={props.id ?? props.name}
           className={cn(
             'absolute left-3 pointer-events-none transition-all duration-200 ease-out',
-            // Default state (kosong)
             'top-1/2 -translate-y-1/2 text-base',
-            // State ketika ada value atau focus (floating)
             'peer-focus:top-1 peer-focus:translate-y-0 peer-focus:text-xs peer-focus:text-primary',
-            // State ketika ada value (not placeholde r)
             'peer-[:not(:placeholder-shown)]:top-1 peer-[:not(:placeholder-shown)]:translate-y-0 peer-[:not(:placeholder-shown)]:text-xs',
-            // Disabled state
             'peer-disabled:opacity-50',
-            // Invalid state
             'peer-aria-invalid:text-destructive',
-            // Adjustment untuk icon di kiri
             icon && iconPosition === 'left' && leftIconPosition[leftIconPadding]
           )}
         >

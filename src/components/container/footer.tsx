@@ -1,6 +1,6 @@
 import React from 'react';
-import FlexibleImage from './wrapper-image';
-import { IMAGES } from '@/constants';
+import FlexibleImage from './image-wrapper';
+import { IMAGES } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 
 const Footer = () => {
