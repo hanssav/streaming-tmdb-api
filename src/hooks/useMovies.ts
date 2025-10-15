@@ -1,4 +1,5 @@
 import { useToast } from '@/context/toast';
+import { APIConfiguration } from '@/lib/constants';
 import { movieApi } from '@/services';
 import { DiscoverMoviesParams, FavoriteBody } from '@/types';
 import {
@@ -19,6 +20,8 @@ export const movieKeys = {
   credits: (movie_id: number) => ['movies', 'credits', movie_id] as const,
 
   addFavorite: () => ['favorites', 'add'] as const,
+  allFavorites: (account_id?: number, movie_id?: number) =>
+    ['favorites', 'all', account_id, movie_id] as const,
 };
 
 export const useDiscoverMovies = (params?: DiscoverMoviesParams) => {
@@ -121,7 +124,7 @@ export const useAddToFavorites = () => {
     },
     onSuccess: () => {
       showToast('Successfully updated favorite status!', 'success');
-      queryClient.invalidateQueries({ queryKey: movieKeys.all });
+      queryClient.invalidateQueries({ queryKey: movieKeys.allFavorites() });
     },
     onError: () => {
       showToast('Failed to update favorite status.', 'error');
@@ -135,5 +138,15 @@ export const useMovvieCreditDetail = (movie_id: number) => {
     queryFn: () => movieApi.getMovieCreditId(movie_id),
     enabled: movie_id > 0,
     staleTime: 10 * 60 * 1000,
+  });
+};
+
+export const useAllFavorites = (movie_id?: number, acc_id?: number) => {
+  const account_id = acc_id ?? APIConfiguration.mock_account_id;
+  return useQuery({
+    queryKey: movieKeys.allFavorites(account_id, movie_id),
+    queryFn: () => movieApi.getAllFavorites(account_id, movie_id),
+    enabled: account_id > 0,
+    staleTime: 60_000,
   });
 };

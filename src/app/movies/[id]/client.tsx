@@ -13,15 +13,14 @@ import {
   OverviewDetailSkeleton,
 } from '@/components/pages/skeleton';
 import { TypographySub, TypographyTitle } from '@/components/ui/typography';
-import { useToast } from '@/context/toast';
 import {
   useAddToFavorites,
+  useAllFavorites,
   useMovieDetail,
   useMovvieCreditDetail,
 } from '@/hooks/useMovies';
-import { IMAGES } from '@/lib/constants';
+import { APIConfiguration, IMAGES } from '@/lib/constants';
 import { cn, getSafeImage, handleImageError } from '@/lib/utils';
-import { on } from 'events';
 import { Calendar } from 'lucide-react';
 import React from 'react';
 
@@ -43,8 +42,30 @@ const ItemsCardMapping: React.FC<{ className?: string }> = ({
 );
 
 const DetailClient: React.FC<{ id: number }> = ({ id }) => {
-  const mock_account_id = 22381243;
-  const [favorite, setFavorite] = React.useState<number | undefined>(undefined);
+  const { data: favorites } = useAllFavorites(id);
+  const [isFavorited, setIsFavorited] = React.useState(false);
+
+  React.useEffect(() => {
+    setIsFavorited(favorites?.id === Number(id));
+  }, [favorites?.id, id]);
+
+  const onFavoriteChange = () => {
+    setIsFavorited((prev) => {
+      const newStatus = !prev;
+
+      addToFavorite.mutate({
+        account_id: APIConfiguration.mock_account_id,
+        body: {
+          media_type: 'movie',
+          media_id: id,
+          favorite: newStatus,
+        },
+      });
+
+      return newStatus;
+    });
+  };
+
   const { data, isLoading } = useMovieDetail(id);
   const {
     title = '',
@@ -59,23 +80,6 @@ const DetailClient: React.FC<{ id: number }> = ({ id }) => {
   const backdrop_url = backdrop_path ?? belongs_to_collection?.backdrop_path;
   const poster_url = poster_path ?? belongs_to_collection?.poster_path;
   const addToFavorite = useAddToFavorites();
-
-  const onFavoriteChange = () => {
-    setFavorite((prev) => {
-      const newFavorite = prev === id ? undefined : id;
-
-      addToFavorite.mutate({
-        account_id: mock_account_id,
-        body: {
-          media_type: 'movie',
-          media_id: id,
-          favorite: !!newFavorite,
-        },
-      });
-
-      return newFavorite;
-    });
-  };
 
   return (
     <div className='flex flex-col lg:gap-12'>
@@ -109,7 +113,7 @@ const DetailClient: React.FC<{ id: number }> = ({ id }) => {
                   />
                 </div>
                 <HeroAction
-                  favorite={favorite}
+                  isFavorited={isFavorited}
                   onChange={onFavoriteChange}
                   className='hidden lg:flex lg:max-w-[220px]'
                 />
@@ -117,7 +121,7 @@ const DetailClient: React.FC<{ id: number }> = ({ id }) => {
               </div>
             </div>
 
-            <HeroAction favorite={favorite} onChange={onFavoriteChange} />
+            <HeroAction isFavorited={isFavorited} onChange={onFavoriteChange} />
             <ItemsCardMapping />
           </Hero.Content>
         </Hero>

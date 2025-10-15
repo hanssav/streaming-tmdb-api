@@ -27,7 +27,7 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
     setTimeout(() => {
       setToast((prev) => (prev ? { ...prev, closing: true } : null));
       setTimeout(() => setToast(null), 300);
-    }, 5000);
+    }, 1000);
   };
 
   const closeToast = () => setToast(null);
@@ -39,7 +39,7 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
         <div
           className={cn(
             'fixed top-40 left-1/2 z-50 px-5 py-3 rounded-2xl text-white flex items-center gap-3 transform -translate-x-1/2 -translate-y-1/2 backdrop-blur-[40px] transition-all duration-300',
-            toast.type === 'success' ? 'bg-[#00000080]' : 'bg-[#ce085b5c]',
+            toast.type === 'success' ? 'bg-[#00000080]' : 'bg-[#ce1c084a]',
             toast.closing ? 'animate-toast-out' : 'animate-toast-in'
           )}
         >

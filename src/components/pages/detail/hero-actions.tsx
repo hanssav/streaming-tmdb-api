@@ -4,10 +4,10 @@ import { cn } from '@/lib/utils';
 import { Heart, LucidePlayCircle } from 'lucide-react';
 
 const HeroAction: React.FC<{
-  favorite: number | undefined;
+  isFavorited: boolean;
   onChange: () => void;
   className?: string;
-}> = ({ favorite = false, onChange, className = 'lg:hidden' }) => {
+}> = ({ isFavorited = false, onChange, className = 'lg:hidden' }) => {
   return (
     <Hero.Actions className={cn('flex flex-row gap-4 items-center', className)}>
       <Button className='flex-1' size='lg'>
@@ -25,7 +25,9 @@ const HeroAction: React.FC<{
         <Heart
           className={cn(
             'absolute size-6 transition-all duration-300',
-            favorite ? 'stroke-primary-300 fill-primary-300' : 'stroke-gray-300'
+            isFavorited
+              ? 'stroke-primary-300 fill-primary-300'
+              : 'stroke-gray-300'
           )}
         />
       </button>
