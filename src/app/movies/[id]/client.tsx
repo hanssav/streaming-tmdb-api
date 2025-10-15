@@ -10,12 +10,18 @@ import HeroAction from '@/components/pages/detail/hero-actions';
 import {
   CreditSkeleton,
   HeroDetailSkeleton,
+  OverviewDetailSkeleton,
 } from '@/components/pages/skeleton';
-import { Skeleton } from '@/components/ui/skeleton';
 import { TypographySub, TypographyTitle } from '@/components/ui/typography';
-import { useMovieDetail, useMovvieCreditDetail } from '@/hooks/useMovies';
+import { useToast } from '@/context/toast';
+import {
+  useAddToFavorites,
+  useMovieDetail,
+  useMovvieCreditDetail,
+} from '@/hooks/useMovies';
 import { IMAGES } from '@/lib/constants';
 import { cn, getSafeImage, handleImageError } from '@/lib/utils';
+import { on } from 'events';
 import { Calendar } from 'lucide-react';
 import React from 'react';
 
@@ -37,7 +43,8 @@ const ItemsCardMapping: React.FC<{ className?: string }> = ({
 );
 
 const DetailClient: React.FC<{ id: number }> = ({ id }) => {
-  const [favorite, setFavorite] = React.useState<boolean>(false);
+  const mock_account_id = 22381243;
+  const [favorite, setFavorite] = React.useState<number | undefined>(undefined);
   const { data, isLoading } = useMovieDetail(id);
   const {
     title = '',
@@ -51,6 +58,24 @@ const DetailClient: React.FC<{ id: number }> = ({ id }) => {
   const { data: credits } = useMovvieCreditDetail(id);
   const backdrop_url = backdrop_path ?? belongs_to_collection?.backdrop_path;
   const poster_url = poster_path ?? belongs_to_collection?.poster_path;
+  const addToFavorite = useAddToFavorites();
+
+  const onFavoriteChange = () => {
+    setFavorite((prev) => {
+      const newFavorite = prev === id ? undefined : id;
+
+      addToFavorite.mutate({
+        account_id: mock_account_id,
+        body: {
+          media_type: 'movie',
+          media_id: id,
+          favorite: !!newFavorite,
+        },
+      });
+
+      return newFavorite;
+    });
+  };
 
   return (
     <div className='flex flex-col lg:gap-12'>
@@ -84,34 +109,22 @@ const DetailClient: React.FC<{ id: number }> = ({ id }) => {
                   />
                 </div>
                 <HeroAction
-                  isFavorite={favorite}
-                  setFavorite={setFavorite}
+                  favorite={favorite}
+                  onChange={onFavoriteChange}
                   className='hidden lg:flex lg:max-w-[220px]'
                 />
                 <ItemsCardMapping className='hidden lg:flex' />
               </div>
             </div>
 
-            <HeroAction isFavorite={favorite} setFavorite={setFavorite} />
+            <HeroAction favorite={favorite} onChange={onFavoriteChange} />
             <ItemsCardMapping />
           </Hero.Content>
         </Hero>
       </ShowOrSkeleton>
       <ShowOrSkeleton
         isLoading={isLoading}
-        skeleton={
-          <SectionWrapper>
-            <Skeleton className='h-7 w-32 lg:h-10 lg:w-64 rounded-md mb-4' />
-            <div className='space-y-3'>
-              {[...Array(4)].map((_, i) => (
-                <Skeleton
-                  key={i}
-                  className={`h-4 rounded-md ${i === 3 ? 'w-2/3' : 'w-full'}`}
-                />
-              ))}
-            </div>
-          </SectionWrapper>
-        }
+        skeleton={<OverviewDetailSkeleton />}
       >
         <SectionWrapper>
           <TypographyTitle label='Overview' smSize='xl' lgSize='display-md' />
@@ -122,35 +135,38 @@ const DetailClient: React.FC<{ id: number }> = ({ id }) => {
         <SectionWrapper>
           <TypographyTitle label='Cast' smSize='xl' lgSize='display-md' />
           <div className='grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-10'>
-            {credits &&
-              credits.cast.length > 0 &&
-              credits.cast.map((cast) => (
-                <CreditsCard key={cast.cast_id} className=''>
-                  <CreditsCard.Image
-                    src={getSafeImage(
-                      cast.profile_path,
-                      IMAGES.DEFAULT_PROFILE
-                    )}
-                    onError={handleImageError(IMAGES.DEFAULT_PROFILE)}
-                    alt={`profile-${cast.name}`}
+            {(credits?.cast ?? []).map((cast) => (
+              <CreditsCard key={cast.cast_id} className=''>
+                <CreditsCard.Image
+                  src={getSafeImage(cast.profile_path, IMAGES.DEFAULT_PROFILE)}
+                  onError={handleImageError(IMAGES.DEFAULT_PROFILE)}
+                  alt={`profile-${cast.name}`}
+                />
+                <CreditsCard.Info>
+                  <TypographyTitle
+                    label={cast.name}
+                    size='sm'
+                    lgSize='lg'
+                    className='font-semibold'
                   />
-                  <CreditsCard.Info>
-                    <TypographyTitle
-                      label={cast.name}
-                      size='sm'
-                      lgSize='lg'
-                      className='font-semibold'
-                    />
-                    <TypographySub
-                      label={cast.known_for_department}
-                      size='sm'
-                      lgSize='md'
-                      className='font-normal'
-                    />
-                  </CreditsCard.Info>
-                </CreditsCard>
-              ))}
+                  <TypographySub
+                    label={cast.known_for_department}
+                    size='sm'
+                    lgSize='md'
+                    className='font-normal'
+                  />
+                </CreditsCard.Info>
+              </CreditsCard>
+            ))}
           </div>
+          {credits && credits.cast && credits.cast.length === 0 && (
+            <TypographySub
+              label='No Data Cast Available'
+              size='sm'
+              lgSize='md'
+              className='font-normal'
+            />
+          )}
         </SectionWrapper>
       </ShowOrSkeleton>
       <ShowOrSkeleton isLoading={isLoading} skeleton={<CreditSkeleton />}>
@@ -181,6 +197,14 @@ const DetailClient: React.FC<{ id: number }> = ({ id }) => {
               </CreditsCard>
             ))}
           </div>
+          {credits && credits.crew && credits.crew.length === 0 && (
+            <TypographySub
+              label='No Data Crew Available'
+              size='sm'
+              lgSize='md'
+              className='font-normal'
+            />
+          )}
         </SectionWrapper>
       </ShowOrSkeleton>
     </div>

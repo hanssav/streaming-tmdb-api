@@ -125,3 +125,9 @@ export type CrewMember = {
   department: string;
   job: string;
 };
+
+export type FavoriteBody = {
+  media_type: string;
+  media_id: number;
+  favorite: boolean;
+};

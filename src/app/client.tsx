@@ -101,7 +101,6 @@ const HomeClient: React.FC<{ randomIndex: number }> = ({ randomIndex }) => {
                 <>
                   {Array.from({ length: 5 }).map((_, i) => (
                     <CarouselItem key={i} className='basis-1/2 lg:basis-1/5'>
-                      xw
                       <MovieCardSkeleton />
                     </CarouselItem>
                   ))}

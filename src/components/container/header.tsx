@@ -38,7 +38,7 @@ const Header = () => {
 
   const pathname = usePathname();
   const goHone = () => router.push('/');
-  const goFavorite = () => router.push('/favorite');
+  const goFavorite = () => router.push('/movies/favorite');
   React.useEffect(() => setOpenMenu(false), [pathname]);
 
   return (

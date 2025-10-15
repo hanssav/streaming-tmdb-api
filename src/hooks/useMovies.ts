@@ -1,5 +1,6 @@
+import { useToast } from '@/context/toast';
 import { movieApi } from '@/services';
-import { DiscoverMoviesParams } from '@/types';
+import { DiscoverMoviesParams, FavoriteBody } from '@/types';
 import {
   useQuery,
   useMutation,
@@ -16,6 +17,8 @@ export const movieKeys = {
   search: (query: string, page: number) =>
     ['movies', 'search', query, page] as const,
   credits: (movie_id: number) => ['movies', 'credits', movie_id] as const,
+
+  addFavorite: () => ['favorites', 'add'] as const,
 };
 
 export const useDiscoverMovies = (params?: DiscoverMoviesParams) => {
@@ -104,13 +107,24 @@ export const usePrefetchMovieDetail = () => {
 
 export const useAddToFavorites = () => {
   const queryClient = useQueryClient();
+  const { showToast } = useToast();
 
   return useMutation({
-    mutationFn: () => {
-      return Promise.resolve();
+    mutationFn: ({
+      account_id,
+      body,
+    }: {
+      account_id: number;
+      body: FavoriteBody;
+    }) => {
+      return movieApi.addToFavorite(account_id, body);
     },
     onSuccess: () => {
+      showToast('Successfully updated favorite status!', 'success');
       queryClient.invalidateQueries({ queryKey: movieKeys.all });
+    },
+    onError: () => {
+      showToast('Failed to update favorite status.', 'error');
     },
   });
 };

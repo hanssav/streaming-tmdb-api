@@ -2,6 +2,7 @@
 import apiClient from '@/lib/client-axios';
 import {
   DiscoverMoviesParams,
+  FavoriteBody,
   MovieCreditsResponse,
   MovieDetailResponse,
   MoviesResponse,
@@ -31,6 +32,14 @@ export const movieApi = {
 
   getMovieCreditId: async (movie_id: number): Promise<MovieCreditsResponse> => {
     const response = await apiClient.get(`/movies/${movie_id}/credits`);
+    return response.data;
+  },
+
+  addToFavorite: async (account_id: number, body: FavoriteBody) => {
+    const response = await apiClient.post(`/movies/favorite`, {
+      account_id,
+      ...body,
+    });
     return response.data;
   },
 };
@@ -88,9 +97,18 @@ export const getMovieByIdWithCredits = async (movie_id: number) => {
   return response.data;
 };
 
+export const addToFavorite = async (account_id: number, body: FavoriteBody) => {
+  const response = await apiServer.post(
+    `/account/${account_id}/favorite`,
+    body
+  );
+  return response.data;
+};
+
 export const ServerService = {
   discoverMovies,
   getMovieById,
   searchMovies,
   getMovieByIdWithCredits,
+  addToFavorite,
 };

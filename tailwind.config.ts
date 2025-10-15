@@ -237,5 +237,22 @@ module.exports = {
       variants: ['sm', 'md', 'lg', 'xl', '2xl'],
     },
   ],
-  theme: {},
+  theme: {
+    extend: {
+      keyframes: {
+        'toast-in': {
+          '0%': { transform: 'translateY(20px) scale(0.5)', opacity: '0' },
+          '100%': { transform: 'translateY(0) scale(1)', opacity: '1' },
+        },
+        'toast-out': {
+          '0%': { transform: 'translateY(0) scale(1)', opacity: '1' },
+          '100%': { transform: 'translateY(-20px) scale(0.5)', opacity: '0' },
+        },
+      },
+      animation: {
+        'toast-in': 'toast-in 0.3s ease-out forwards',
+        'toast-out': 'toast-out 0.3s ease-in forwards',
+      },
+    },
+  },
 };
