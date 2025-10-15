@@ -1,18 +1,8 @@
 import React from 'react';
-import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 
-type HeroImageSkeletonProps = {
-  className?: string;
-};
-
-const HeroImageSkeleton = ({ className }: HeroImageSkeletonProps) => (
-  <div
-    className={cn(
-      'relative w-full min-h-[345px] lg:h-[810px] overflow-hidden',
-      className
-    )}
-  >
+const HeroImageSkeleton = () => (
+  <div className='relative w-full min-h-[345px] lg:h-[810px] overflow-hidden'>
     <Skeleton className='w-full h-full min-h-[345px] lg:h-[810px] rounded-none' />
 
     <div className='absolute inset-0 flex flex-col justify-end px-4 lg:px-[140px] pb-12'>

@@ -54,11 +54,8 @@ MovieCard.displayName = 'MovieCard';
 MovieCard.Image = ({ src, alt, className }) => (
   <FlexibleImage
     alt={alt}
-    src={src ? `${PATH.TMDB_IMAGES_URL}${src}` : IMAGES.TRENDING.TRENDING_1}
-    className={cn(
-      'rounded-xl w-full h-auto min-h-[266px] lg:min-h-[321px]',
-      className
-    )}
+    src={src ? `${PATH.TMDB_IMAGES_URL}${src}` : IMAGES.DEFAULT_IMAGE}
+    className={cn('w-full h-auto min-h-[266px] lg:min-h-[321px]', className)}
     fit='cover'
   />
 );

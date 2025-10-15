@@ -1,7 +1,8 @@
 import { ReactNode } from 'react';
 import { cn } from '@/lib/utils';
-import FlexibleImage from './image-wrapper';
+import FlexibleImage, { FlexibleImageProps } from './image-wrapper';
 import { TypographySub, TypographyTitle } from '../ui/typography';
+import { TypographySubProps, TypographyTitleProps } from '../ui/types';
 
 type HeroProps = {
   children: ReactNode;
@@ -12,8 +13,8 @@ type HeroComponent = React.FC<HeroProps> & {
   Image: React.FC<HeroImageProps>;
   Overlay: React.FC<HeroOverlayProps>;
   Content: React.FC<HeroContentProps>;
-  Title: React.FC<HeroTitleProps>;
-  Subtitle: React.FC<HeroSubtitleProps>;
+  Title: React.FC<TypographyTitleProps>;
+  Subtitle: React.FC<TypographySubProps>;
   Actions: React.FC<HeroActionsProps>;
 };
 
@@ -27,17 +28,24 @@ type HeroImageProps = {
   alt: string;
   fit?: 'cover' | 'contain';
   className?: string;
-};
+} & FlexibleImageProps;
 
-Hero.Image = ({ src, alt, fit = 'cover', className }: HeroImageProps) => (
+Hero.Image = ({
+  src,
+  alt,
+  fit = 'cover',
+  className,
+  ...props
+}: HeroImageProps) => (
   <FlexibleImage
     src={src}
     alt={alt}
     fit={fit}
     className={cn(
-      'w-full h-full min-h-[345px] lg:h-[810px] object-[center_80%]',
+      'w-full h-full min-h-[392px] lg:h-[810px] object-[center_80%]',
       className
     )}
+    {...props}
   />
 );
 Hero.Image.displayName = 'Hero.Image';
@@ -49,12 +57,15 @@ type HeroOverlayProps = {
 Hero.Overlay = ({ className }: HeroOverlayProps) => (
   <div
     className={cn(
-      'absolute inset-0 z-10 w-full h-full min-h-[345px] lg:h-[810px] ob',
+      'absolute inset-0 z-10 w-full h-full min-h-[345px] lg:h-[810px]',
       className
     )}
   >
-    <div className='absolute inset-0 bg-black/40' />
-    <div className='absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.1)_0%,rgba(0,0,0,0.9)_80%)] lg:bg-[linear-gradient(180deg,rgba(0,0,0,0.1)_0%,rgba(0,0,0,0.9)_100%)]' />
+    <div
+      className={cn(
+        'absolute bottom-0 left-0 w-full min-h-full z-30 pointer-events-none bg-gradient-to-t from-black via-black/90 lg:via-black/50 to-black/0'
+      )}
+    />
   </div>
 );
 Hero.Overlay.displayName = 'Hero.Overlay';
@@ -65,42 +76,31 @@ type HeroContentProps = {
 };
 
 Hero.Content = ({ children, className }: HeroContentProps) => (
-  <div className={cn('px-4 lg:px-[140px]', className)}>
-    <div
-      className={cn(
-        'relative z-10 mt-[-200px] lg:mt-[-500px]',
-        'w-full max-w-[361px] lg:max-w-[635px]',
-        'flex flex-col gap-6 lg:gap-12'
-      )}
-    >
-      {children}
-    </div>
+  <div
+    className={cn(
+      'mx-4 lg:mx-[140px] relative z-10 mt-[-200px] lg:mt-[-500px]',
+      'flex flex-col gap-6 lg:gap-12',
+      className
+    )}
+  >
+    {children}
   </div>
 );
 Hero.Content.displayName = 'Hero.Content';
 
-type HeroTitleProps = {
-  label: string;
-  className?: string;
-};
-
-Hero.Title = ({ label, className }: HeroTitleProps) => (
+Hero.Title = ({ label, className, ...props }: TypographyTitleProps) => (
   <TypographyTitle
     as='h1'
     label={label}
     lgSize='display-2xl'
     className={className}
+    {...props}
   />
 );
 Hero.Title.displayName = 'Hero.Title';
 
-type HeroSubtitleProps = {
-  label: string;
-  className?: string;
-};
-
-Hero.Subtitle = ({ label, className }: HeroSubtitleProps) => (
-  <TypographySub label={label} className={className} />
+Hero.Subtitle = ({ label, className, ...props }: TypographySubProps) => (
+  <TypographySub label={label} className={className} {...props} />
 );
 Hero.Subtitle.displayName = 'Hero.Subtitle';
 

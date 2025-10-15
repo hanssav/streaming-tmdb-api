@@ -2,7 +2,7 @@ import React from 'react';
 import Image, { ImageProps } from 'next/image';
 import { cn } from '@/lib/utils';
 
-type FlexibleImageProps = Omit<ImageProps, 'fill'> & {
+export type FlexibleImageProps = Omit<ImageProps, 'fill'> & {
   className?: string;
   children?: React.ReactNode;
   fit?: 'contain' | 'cover' | 'fill';

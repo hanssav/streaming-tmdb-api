@@ -9,6 +9,8 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/t/p/**',
       },
+      { protocol: 'https', hostname: 'cdn.pixabay.com' },
+      { protocol: 'https', hostname: 'upload.wikimedia.org' },
     ],
   },
 };

@@ -6,6 +6,7 @@ import { PATH } from '@/lib/constants';
 import {
   useDiscoverMovies,
   useInfiniteDiscoverMovies,
+  usePrefetchMovieDetail,
 } from '@/hooks/useMovies';
 import { LucidePlayCircle } from 'lucide-react';
 import React from 'react';
@@ -23,9 +24,11 @@ import {
   HeroImageSkeleton,
   MovieCardSkeleton,
 } from '@/components/pages/skeleton';
+import { useRouter } from 'next/navigation';
 
 const HomeClient: React.FC<{ randomIndex: number }> = ({ randomIndex }) => {
   const today = new Date().toISOString().split('T')[0];
+  const router = useRouter();
 
   const { data, isLoading } = useDiscoverMovies({
     sort_by: 'popularity.desc',
@@ -48,20 +51,27 @@ const HomeClient: React.FC<{ randomIndex: number }> = ({ randomIndex }) => {
     isFetchingNextPage,
   } = useInfiniteDiscoverMovies(params);
 
+  const { prefetchMovieDetail } = usePrefetchMovieDetail();
+
+  const onClickMovie = async (id: number) => {
+    await prefetchMovieDetail(id);
+    router.push(`/movies/${id}`);
+  };
+
   const MovieSkeleton = ({ limit = 20 }) =>
     Array.from({ length: limit }).map((_, i) => <MovieCardSkeleton key={i} />);
 
   return (
     <>
       <ShowOrSkeleton isLoading={isLoading} skeleton={<HeroImageSkeleton />}>
-        <Hero className='bg-gray-900'>
+        <Hero>
           <Hero.Image
             src={`${PATH.TMDB_IMAGES_URL}${backdrop_path}`}
             alt='hero'
             className='rounded-xl shadow-lg'
           />
           <Hero.Overlay />
-          <Hero.Content className=''>
+          <Hero.Content className='w-full max-w-[361px] lg:max-w-[635px]'>
             <Hero.Title label={title} className='text-white' />
             <Hero.Subtitle label={overview} className='text-gray-300' />
             <Hero.Actions className='mt-4'>
@@ -73,6 +83,7 @@ const HomeClient: React.FC<{ randomIndex: number }> = ({ randomIndex }) => {
                 variant='outline'
                 size='lg'
                 className='lg:flex-1 bg-neutral-950'
+                onClick={() => onClickMovie(trending?.[randomIndex]?.id)}
               >
                 See Detail
               </Button>
@@ -90,6 +101,7 @@ const HomeClient: React.FC<{ randomIndex: number }> = ({ randomIndex }) => {
                 <>
                   {Array.from({ length: 5 }).map((_, i) => (
                     <CarouselItem key={i} className='basis-1/2 lg:basis-1/5'>
+                      xw
                       <MovieCardSkeleton />
                     </CarouselItem>
                   ))}
@@ -97,7 +109,11 @@ const HomeClient: React.FC<{ randomIndex: number }> = ({ randomIndex }) => {
               }
             >
               {trending.map(({ id, title, poster_path, vote_average }) => (
-                <CarouselItem key={id} className='basis-1/2 lg:basis-1/5'>
+                <CarouselItem
+                  key={id}
+                  className='basis-1/2 lg:basis-1/5'
+                  onClick={() => onClickMovie(id)}
+                >
                   <MovieCard className='hover:scale-105 transition'>
                     <MovieCard.Image
                       src={poster_path}
@@ -129,7 +145,11 @@ const HomeClient: React.FC<{ randomIndex: number }> = ({ randomIndex }) => {
               skeleton={<MovieSkeleton />}
             >
               {movies?.map(({ poster_path, title, vote_average, id }) => (
-                <MovieCard key={id} className='hover:scale-105 transition'>
+                <MovieCard
+                  key={id}
+                  className='hover:scale-105 transition'
+                  onClick={() => onClickMovie(id)}
+                >
                   <MovieCard.Image
                     src={poster_path}
                     alt={title}

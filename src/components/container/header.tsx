@@ -5,11 +5,15 @@ import { Menu, Search, X } from 'lucide-react';
 import React from 'react';
 import { Input } from '../ui/input';
 import FlexibleImage from './image-wrapper';
+import { usePathname, useRouter } from 'next/navigation';
+import { useHeader } from '@/hooks/useHeader';
 
-const ListMenu: React.FC<{ className?: string; open?: boolean }> = ({
-  className,
-  open = false,
-}) => {
+const ListMenu: React.FC<{
+  className?: string;
+  open?: boolean;
+  goHome: () => void;
+  goFavorite: () => void;
+}> = ({ goHome, goFavorite, className, open = false }) => {
   return (
     <ul
       className={cn(
@@ -18,48 +22,34 @@ const ListMenu: React.FC<{ className?: string; open?: boolean }> = ({
         className
       )}
     >
-      <li className='text-md font-normal'>Home</li>
-      <li className='text-md font-normal'>Favorite</li>
+      <li className='text-md font-normal' onClick={goHome}>
+        Home
+      </li>
+      <li className='text-md font-normal' onClick={goFavorite}>
+        Favorite
+      </li>
     </ul>
   );
 };
 
 const Header = () => {
-  const [isOpenMenu, setOpenMenu] = React.useState<boolean>(false);
-  const [isScrolled, setIsScrolled] = React.useState(false);
+  const { isOpenMenu, setOpenMenu, isScrolled } = useHeader();
+  const router = useRouter();
 
-  React.useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  React.useEffect(() => {
-    if (isOpenMenu) {
-      document.body.style.overflow = 'hidden';
-      document.body.style.touchAction = 'none';
-    } else {
-      document.body.style.overflow = '';
-      document.body.style.touchAction = '';
-    }
-    return () => {
-      document.body.style.overflow = '';
-      document.body.style.touchAction = '';
-    };
-  }, [isOpenMenu]);
+  const pathname = usePathname();
+  const goHone = () => router.push('/');
+  const goFavorite = () => router.push('/favorite');
+  React.useEffect(() => setOpenMenu(false), [pathname]);
 
   return (
     <>
       <header
         className={cn(
-          'flex flex-row items-center justify-between gap-4 lg:px-[140px] lg:h-[90px]',
-          'fixed top-0 left-0 z-50 w-full p-4',
+          'fixed top-0 left-0 z-50 w-full p-4 flex flex-row items-center justify-between gap-4 lg:px-[140px] lg:h-[90px]',
           'border-b border-transparent transition-all duration-300',
           isScrolled && [
-            'backdrop-blur-xl supports-[backdrop-filter]:bg-white/70 dark:supports-[backdrop-filter]:bg-black/40',
+            'backdrop-blur-xl supports-[backdrop-filter]:bg-white/70',
+            'dark:supports-[backdrop-filter]:bg-black/40',
             'border-b border-white/20 shadow-[0_4px_20px_rgba(0,0,0,0.05)]',
           ],
           isOpenMenu && 'bg-black'
@@ -70,18 +60,25 @@ const Header = () => {
             src={IMAGES.LOGO}
             alt='logo'
             className='h-[28px] w-[92px] lg:w-[130px] lg:h-10'
+            onClick={goHone}
           />
-          <ListMenu className='hidden lg:flex' />
+          <ListMenu
+            className='hidden lg:flex'
+            goHome={goHone}
+            goFavorite={goFavorite}
+          />
         </div>
+
         <div className='hidden lg:block w-full max-w-[243px]'>
           <Input
             label='search'
             id='search'
             className='bg-[#0A0D1299]'
             iconPosition='left'
-            icon={<Search className='size-5 text-neutral-500 ' />}
+            icon={<Search className='size-5 text-neutral-500' />}
           />
         </div>
+
         {isOpenMenu ? (
           <X className='w-6 h-6' onClick={() => setOpenMenu(false)} />
         ) : (
@@ -91,6 +88,7 @@ const Header = () => {
           </div>
         )}
       </header>
+
       <div
         className={cn(
           'absolute lg:hidden top-[60px] left-0 w-full h-screen bg-transparent border-none z-50 overflow-hidden',
@@ -100,7 +98,7 @@ const Header = () => {
             : '-translate-x-full opacity-0 pointer-events-none'
         )}
       >
-        <ListMenu open={isOpenMenu} />
+        <ListMenu goHome={goHone} goFavorite={goFavorite} open={isOpenMenu} />
       </div>
     </>
   );

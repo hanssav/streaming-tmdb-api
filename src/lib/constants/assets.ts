@@ -1,16 +1,12 @@
 export const IMAGES = {
   LOGO: '/images/logo.svg',
-  HERO: '/images/hero-image.png',
   HERO_DETAIL: '/images/hero-detail-image.png',
 
-  TRENDING: {
-    TRENDING_1: '/images/trending/image-1.png',
-    TRENDING_2: '/images/trending/image-2.png',
-    TRENDING_3: '/images/trending/image-3.png',
-    TRENDING_4: '/images/trending/image-4.png',
-    TRENDING_5: '/images/trending/image-5.png',
-    TRENDING_6: '/images/trending/image-6.png',
-  },
+  DEFAULT_IMAGE: '/images/default-movie.png',
+  DEFAULT_PROFILE:
+    'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png',
+  DEFAULT_BACKDROP:
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/No_image_available_600_x_450.svg/640px-No_image_available_600_x_450.svg.png',
 };
 
 export const PATH = {

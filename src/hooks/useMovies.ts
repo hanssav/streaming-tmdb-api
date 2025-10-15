@@ -15,6 +15,7 @@ export const movieKeys = {
   detail: (id: number) => ['movies', 'detail', id] as const,
   search: (query: string, page: number) =>
     ['movies', 'search', query, page] as const,
+  credits: (movie_id: number) => ['movies', 'credits', movie_id] as const,
 };
 
 export const useDiscoverMovies = (params?: DiscoverMoviesParams) => {
@@ -88,17 +89,17 @@ export const useSearchMovies = (query: string, page: number = 1) => {
   });
 };
 
-export const usePrefetchMovie = () => {
+export const usePrefetchMovieDetail = () => {
   const queryClient = useQueryClient();
 
-  const prefetchMovie = (id: number) => {
+  const prefetchMovieDetail = (id: number) => {
     queryClient.prefetchQuery({
       queryKey: movieKeys.detail(id),
       queryFn: () => movieApi.getMovieById(id),
     });
   };
 
-  return { prefetchMovie };
+  return { prefetchMovieDetail };
 };
 
 export const useAddToFavorites = () => {
@@ -111,5 +112,14 @@ export const useAddToFavorites = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: movieKeys.all });
     },
+  });
+};
+
+export const useMovvieCreditDetail = (movie_id: number) => {
+  return useQuery({
+    queryKey: movieKeys.credits(movie_id),
+    queryFn: () => movieApi.getMovieCreditId(movie_id),
+    enabled: movie_id > 0,
+    staleTime: 10 * 60 * 1000,
   });
 };

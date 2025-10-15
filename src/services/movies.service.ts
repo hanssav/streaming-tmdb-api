@@ -1,6 +1,11 @@
 // client api service
 import apiClient from '@/lib/client-axios';
-import { DiscoverMoviesParams, MoviesResponse } from '@/types';
+import {
+  DiscoverMoviesParams,
+  MovieCreditsResponse,
+  MovieDetailResponse,
+  MoviesResponse,
+} from '@/types';
 
 export const movieApi = {
   discoverMovies: async (
@@ -12,7 +17,7 @@ export const movieApi = {
     return response.data;
   },
 
-  getMovieById: async (id: number) => {
+  getMovieById: async (id: number): Promise<MovieDetailResponse> => {
     const response = await apiClient.get(`/movies/${id}`);
     return response.data;
   },
@@ -21,6 +26,11 @@ export const movieApi = {
     const response = await apiClient.get('/movies/search', {
       params: { query, page },
     });
+    return response.data;
+  },
+
+  getMovieCreditId: async (movie_id: number): Promise<MovieCreditsResponse> => {
+    const response = await apiClient.get(`/movies/${movie_id}/credits`);
     return response.data;
   },
 };
@@ -73,4 +83,14 @@ export const searchMovies = async (query: string, page: number = 1) => {
   return response.data;
 };
 
-export const ServerService = { discoverMovies, getMovieById, searchMovies };
+export const getMovieByIdWithCredits = async (movie_id: number) => {
+  const response = await apiServer.get(`/movie/${movie_id}/credits`);
+  return response.data;
+};
+
+export const ServerService = {
+  discoverMovies,
+  getMovieById,
+  searchMovies,
+  getMovieByIdWithCredits,
+};
