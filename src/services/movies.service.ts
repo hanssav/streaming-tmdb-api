@@ -43,7 +43,9 @@ export const movieApi = {
     });
     return response.data;
   },
-  getAllFavorites: async (account_id: number, movie_id?: number) => {
+  getAllFavorites: async (movie_id?: number, acc_id?: number) => {
+    const account_id = acc_id ?? APIConfiguration.mock_account_id;
+
     const response = await apiClient.get(`/movies/favorite`, {
       params: { account_id, movie_id },
     });
@@ -67,6 +69,7 @@ export const movieApiDirect = {
 
 // (Server-side service)
 import apiServer from '@/lib/server-axios';
+import { APIConfiguration } from '@/lib/constants';
 
 export const discoverMovies = async (
   params: DiscoverMoviesParams = {}

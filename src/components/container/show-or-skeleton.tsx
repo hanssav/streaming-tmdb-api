@@ -10,7 +10,7 @@ type ListProps<T> = {
   isLoading: boolean;
   skeletonCount?: number;
   Skeleton: React.ComponentType<{ idx?: number; length?: number }>;
-  data: T[];
+  data?: T[];
   children: (item: T, idx: number, length: number) => React.ReactNode;
 };
 
@@ -21,7 +21,7 @@ type ShowOrSkeletonProps<T> =
 export default function ShowOrSkeleton<T>(props: ShowOrSkeletonProps<T>) {
   const { isLoading } = props;
 
-  if ('data' in props && props.data !== undefined) {
+  if ('data' in props && props.Skeleton) {
     const { skeletonCount = 3, Skeleton, data, children } = props;
 
     if (isLoading) {
@@ -38,7 +38,7 @@ export default function ShowOrSkeleton<T>(props: ShowOrSkeletonProps<T>) {
       );
     }
 
-    return <>{data.map((item, idx) => children(item, idx, data.length))}</>;
+    return <>{data?.map((item, idx) => children(item, idx, data.length))}</>;
   }
 
   const { skeleton, children } = props;

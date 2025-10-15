@@ -3,6 +3,7 @@ import HeroImageSkeleton from './hero-skeleton';
 import HeroDetailSkeleton from './hero-detail-skeleton';
 import CreditSkeleton from './credit-skeleton';
 import OverviewDetailSkeleton from './overview-detail-skeleton';
+import FavoriteCardSkeleton from './favorite-movie-card';
 
 export {
   MovieCardSkeleton,
@@ -10,4 +11,5 @@ export {
   HeroDetailSkeleton,
   CreditSkeleton,
   OverviewDetailSkeleton,
+  FavoriteCardSkeleton,
 };

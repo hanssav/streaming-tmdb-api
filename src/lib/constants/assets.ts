@@ -1,6 +1,7 @@
 export const IMAGES = {
   LOGO: '/images/logo.svg',
   HERO_DETAIL: '/images/hero-detail-image.png',
+  EMPTY_FAVORITE: '/images/empty-movie.svg',
 
   DEFAULT_IMAGE: '/images/default-movie.png',
   DEFAULT_PROFILE:
