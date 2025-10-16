@@ -48,5 +48,6 @@ export const useFavorite = () => {
     addToFavorite,
     onChangeFavorite,
     isLoading,
+    isAddLoding: addToFavorite.isPending,
   };
 };

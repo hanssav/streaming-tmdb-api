@@ -14,13 +14,12 @@ import React from 'react';
 import { useFavorite } from './use-favorite';
 
 const FavoriteClient = () => {
-  const { data, isFavorited, isFetching, isLoading, onChangeFavorite } =
-    useFavorite();
+  const { data, isFavorited, isLoading, onChangeFavorite } = useFavorite();
 
   return (
     <SectionWrapper className='space-y-6 pt-6'>
       <ShowOrSkeleton
-        isLoading={isFetching || isLoading}
+        isLoading={isLoading}
         skeletonCount={5}
         data={data}
         Skeleton={FavoriteCardSkeleton}
@@ -58,7 +57,7 @@ const FavoriteClient = () => {
               <Card.HeartButton
                 isFavorited={isFavorited?.includes(fav.id)}
                 onChange={() => onChangeFavorite(fav.id)}
-                className='hidden lg:flex size-16 aspect-square self-center'
+                className='hidden lg:flex size-16 aspect-square self-center lg:ml-auto'
               />
             </div>
 

@@ -38,7 +38,7 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
       {toast && (
         <div
           className={cn(
-            'fixed top-40 left-1/2 z-50 px-5 py-3 rounded-2xl text-white flex items-center gap-3 transform -translate-x-1/2 -translate-y-1/2 backdrop-blur-[40px] transition-all duration-300',
+            'fixed top-20 lg:top-40 left-1/2 z-50 px-5 py-3 rounded-2xl text-white flex items-center gap-3 transform -translate-x-1/2 -translate-y-1/2 backdrop-blur-[40px] transition-all duration-300 w-9/10 lg:w-3/10',
             toast.type === 'success' ? 'bg-[#00000080]' : 'bg-[#ce1c084a]',
             toast.closing ? 'animate-toast-out' : 'animate-toast-in'
           )}
@@ -48,7 +48,9 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
           ) : (
             <CircleX className='size-6' />
           )}
-          <p className='text-sm font-medium flex-1'>{toast.message}</p>
+          <p className='text-xs lg:text-sm font-medium flex-1'>
+            {toast.message}
+          </p>
           <button
             onClick={closeToast}
             className='ml-2 text-white hover:opacity-70'

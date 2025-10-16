@@ -1,14 +1,21 @@
-import React, { createContext, useContext } from 'react';
-import { cn } from '@/lib/utils';
-import { ArrowLeft } from 'lucide-react';
-import { FlexibleImage } from '@/components/container';
+'use client';
+
 import { IMAGES } from '@/lib/constants';
+import { cn } from '@/lib/utils';
+import { ArrowLeft, Menu, Search, X } from 'lucide-react';
+import React, { createContext, useContext, ReactNode } from 'react';
+import FlexibleImage from '../../container/image-wrapper';
+import { usePathname, useRouter } from 'next/navigation';
+import { useHeader } from '@/hooks/useHeader';
+import { Button } from '../../ui/button';
+import { SearchMotion } from './search-layout';
 
 type HeaderContextValue = {
   isScrolled: boolean;
   isOpenMenu: boolean;
   isSearchMode: boolean;
-  setIsSearchMode: (value: boolean) => void;
+  setOpenMenu: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsSearchMode: React.Dispatch<React.SetStateAction<boolean>>;
   goHome: () => void;
   goFavorite: () => void;
 };
@@ -18,138 +25,199 @@ const HeaderContext = createContext<HeaderContextValue | undefined>(undefined);
 const useHeaderContext = () => {
   const context = useContext(HeaderContext);
   if (!context) {
-    throw new Error('Header compound components must be used within Header');
+    throw new Error(
+      'Header compound components must be used within Header.Root'
+    );
   }
   return context;
 };
 
-type HeaderProps = {
-  children: React.ReactNode;
-  isScrolled: boolean;
-  isOpenMenu: boolean;
-  isSearchMode: boolean;
-  setIsSearchMode: (value: boolean) => void;
-  goHome: () => void;
-  goFavorite: () => void;
+type HeaderRootProps = {
+  children: ReactNode;
 };
 
-export const Header = ({
-  children,
-  isScrolled,
-  isOpenMenu,
-  isSearchMode,
-  setIsSearchMode,
-  goHome,
-  goFavorite,
-}: HeaderProps) => {
+const HeaderRoot = ({ children }: HeaderRootProps) => {
+  const { isOpenMenu, setOpenMenu, isScrolled, isSearchMode, setIsSearchMode } =
+    useHeader();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const goHome = () => router.push('/');
+  const goFavorite = () => router.push('/movies/favorite');
+
+  React.useEffect(() => {
+    setOpenMenu(false);
+    setIsSearchMode(false);
+  }, [pathname, setOpenMenu, setIsSearchMode]);
+
   return (
     <HeaderContext.Provider
       value={{
         isScrolled,
         isOpenMenu,
         isSearchMode,
+        setOpenMenu,
         setIsSearchMode,
         goHome,
         goFavorite,
       }}
     >
-      <header
-        className={cn(
-          'fixed top-0 left-0 z-50 w-full lg:px-[140px] h-16 lg:h-[90px]',
-          'flex flex-row items-center justify-between gap-4 p-4',
-          'border-b border-transparent transition-all duration-300',
-          {
-            'backdrop-blur-xl supports-[backdrop-filter]:bg-white/70 shadow-xl':
-              isScrolled && !isOpenMenu && !isSearchMode,
-            'dark:supports-[backdrop-filter]:bg-black/40':
-              isScrolled && !isOpenMenu && !isSearchMode,
-            'border-b border-white/20 shadow-[0_4px_20px_rgba(0,0,0,0.05)]':
-              isScrolled && !isOpenMenu && !isSearchMode,
-            'bg-black': isOpenMenu || isSearchMode,
-            'justify-start lg:justify-between': isSearchMode,
-          }
-        )}
-      >
-        {children}
-      </header>
+      {children}
     </HeaderContext.Provider>
   );
 };
 
-type HeaderMobileProps = {
-  children?: React.ReactNode;
+type HeaderContainerProps = {
+  children: ReactNode;
 };
 
-const HeaderMobile = ({ children }: HeaderMobileProps) => {
-  const { isSearchMode, setIsSearchMode, goHome } = useHeaderContext();
+const HeaderContainer = ({ children }: HeaderContainerProps) => {
+  const { isScrolled, isOpenMenu, isSearchMode } = useHeaderContext();
+
+  return (
+    <header
+      className={cn(
+        'fixed top-0 left-0 z-50 w-full lg:px-[140px] h-16 lg:h-[90px]',
+        'flex flex-row items-center justify-between gap-4 p-4',
+        'border-b border-transparent transition-all duration-300',
+        {
+          'backdrop-blur-xl supports-[backdrop-filter]:bg-white/70 shadow-xl':
+            isScrolled && !isOpenMenu && !isSearchMode,
+          'dark:supports-[backdrop-filter]:bg-black/40':
+            isScrolled && !isOpenMenu && !isSearchMode,
+          'border-b border-white/20 shadow-[0_4px_20px_rgba(0,0,0,0.05)]':
+            isScrolled && !isOpenMenu && !isSearchMode,
+          'bg-black': isOpenMenu || isSearchMode,
+          'justify-start lg:justify-between': isSearchMode,
+        }
+      )}
+    >
+      {children}
+    </header>
+  );
+};
+
+type HeaderLogoProps = {
+  className?: string;
+};
+
+const HeaderLogo = ({ className }: HeaderLogoProps) => {
+  const { goHome } = useHeaderContext();
+
+  return (
+    <FlexibleImage
+      src={IMAGES.LOGO}
+      alt='logo'
+      className={cn(
+        'h-[28px] w-[92px] lg:w-[130px] lg:h-10 cursor-pointer',
+        className
+      )}
+      onClick={goHome}
+    />
+  );
+};
+
+const HeaderMobile = () => {
+  const { isSearchMode, setIsSearchMode } = useHeaderContext();
 
   return (
     <div className='lg:hidden'>
-      {children ? (
-        children
-      ) : isSearchMode ? (
-        <ArrowLeft className='size-6' onClick={() => setIsSearchMode(false)} />
+      {isSearchMode ? (
+        <ArrowLeft
+          className='size-6 cursor-pointer'
+          onClick={() => setIsSearchMode(false)}
+        />
       ) : (
-        <HeaderLogo onClick={goHome} />
+        <HeaderLogo />
       )}
     </div>
   );
 };
 
-type HeaderLogoProps = {
-  onClick: () => void;
-  className?: string;
+type HeaderDesktopProps = {
+  children: ReactNode;
 };
-
-const HeaderLogo = ({ onClick, className }: HeaderLogoProps) => (
-  <FlexibleImage
-    src={IMAGES.LOGO}
-    alt='logo'
-    className={cn('h-[28px] w-[92px] lg:w-[130px] lg:h-10', className)}
-    onClick={onClick}
-  />
-);
-
-interface HeaderDesktopProps {
-  children: React.ReactNode;
-}
 
 const HeaderDesktop = ({ children }: HeaderDesktopProps) => {
   return <div className='flex gap-4 lg:gap-20'>{children}</div>;
 };
 
-interface HeaderLogoComponentProps {
-  onClick?: () => void;
+type HeaderNavProps = {
   className?: string;
-}
-
-const HeaderLogoComponent = ({
-  onClick,
-  className,
-}: HeaderLogoComponentProps) => {
-  return <HeaderLogo onClick={onClick} className={className} />;
 };
 
-// Menu Component
-interface HeaderMenuProps {
-  className?: string;
-}
-
-const HeaderMenu = ({ className }: HeaderMenuProps) => {
+const HeaderNav = ({ className }: HeaderNavProps) => {
   const { goHome, goFavorite } = useHeaderContext();
 
   return (
-    <ListMenu className={className} goHome={goHome} goFavorite={goFavorite} />
+    <nav
+      className={cn(
+        'flex gap-6 lg:gap-20 lg:items-center justify-start',
+        className
+      )}
+    >
+      <Button variant='ghost' onClick={goHome} className='flex justify-start'>
+        Home
+      </Button>
+      <Button
+        variant='ghost'
+        onClick={goFavorite}
+        className='flex justify-start'
+      >
+        Favorite
+      </Button>
+    </nav>
   );
 };
 
-// Mobile Menu Drawer Component
-interface HeaderMobileMenuProps {
-  children?: React.ReactNode;
-}
+type HeaderMobileActionsProps = {
+  onSearch: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  searchValue: string;
+};
 
-const HeaderMobileMenu = ({ children }: HeaderMobileMenuProps) => {
-  const { isOpenMenu, goHome, goFavorite } = useHeaderContext();
+const HeaderMobileActions = ({
+  onSearch,
+  searchValue,
+}: HeaderMobileActionsProps) => {
+  const { isOpenMenu, isSearchMode, setOpenMenu, setIsSearchMode } =
+    useHeaderContext();
+
+  if (isOpenMenu) {
+    return (
+      <X
+        className='w-6 h-6 cursor-pointer'
+        onClick={() => setOpenMenu(false)}
+      />
+    );
+  }
+
+  return (
+    <div className={cn('lg:hidden flex gap-6', isSearchMode && 'flex-1')}>
+      {isSearchMode ? (
+        <SearchMotion.TriggerInput
+          id='mobile'
+          className='flex lg:hidden max-w-full'
+          handleInputChange={onSearch}
+          value={searchValue}
+        />
+      ) : (
+        <>
+          <Search
+            className='w-6 h-6 cursor-pointer'
+            onClick={() => setIsSearchMode(true)}
+          />
+          <Menu
+            className='w-6 h-6 cursor-pointer'
+            onClick={() => setOpenMenu(true)}
+          />
+        </>
+      )}
+    </div>
+  );
+};
+
+const HeaderMobileDrawer = () => {
+  const { isOpenMenu } = useHeaderContext();
 
   return (
     <div
@@ -157,47 +225,51 @@ const HeaderMobileMenu = ({ children }: HeaderMobileMenuProps) => {
         'fixed lg:hidden top-[60px] left-0 w-full h-screen border-none z-50 overflow-hidden',
         'transition-transform duration-300 ease-in-out bg-black',
         isOpenMenu
-          ? 'translate-x-0 opacity-100 pointer-events-auto h-screen'
+          ? 'translate-x-0 opacity-100 pointer-events-auto'
           : '-translate-x-full opacity-0 pointer-events-none'
       )}
     >
-      {children || (
-        <ListMenu goHome={goHome} goFavorite={goFavorite} open={isOpenMenu} />
-      )}
+      <HeaderNav className='flex-col px-4 py-6 gap-4' />
     </div>
   );
 };
 
-const ListMenu: React.FC<{
-  className?: string;
-  open?: boolean;
-  goHome: () => void;
-  goFavorite: () => void;
-}> = ({ goHome, goFavorite, className, open = false }) => {
+type HeaderSearchProps = {
+  children: ReactNode;
+  onSearch: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  searchValue: string;
+};
+
+const HeaderSearch = ({
+  children,
+  onSearch,
+  searchValue,
+}: HeaderSearchProps) => {
+  const { isSearchMode, setIsSearchMode } = useHeaderContext();
+
   return (
-    <ul
-      className={cn(
-        'flex px-4 gap-6 lg:gap-20 lg:items-center',
-        open && 'py-6 space-y-4 flex-col',
-        className
-      )}
+    <SearchMotion.Root
+      isSearchMode={isSearchMode}
+      setIsSearchMode={setIsSearchMode}
     >
-      <li className='text-md font-normal'>
-        <Button className='' variant={'ghost'} onClick={goHome}>
-          Home
-        </Button>
-      </li>
-      <li className='text-md font-normal'>
-        <Button variant={'ghost'} onClick={goFavorite}>
-          Favorite
-        </Button>
-      </li>
-    </ul>
+      <SearchMotion.TriggerInput
+        id={'desktop'}
+        handleInputChange={onSearch}
+        value={searchValue}
+      />
+      {children}
+    </SearchMotion.Root>
   );
 };
 
-Header.Mobile = HeaderMobile;
-Header.Desktop = HeaderDesktop;
-Header.Logo = HeaderLogoComponent;
-Header.Menu = HeaderMenu;
-Header.MobileMenu = HeaderMobileMenu;
+export const HeaderLayout = {
+  Root: HeaderRoot,
+  Container: HeaderContainer,
+  Logo: HeaderLogo,
+  Mobile: HeaderMobile,
+  Desktop: HeaderDesktop,
+  Nav: HeaderNav,
+  MobileActions: HeaderMobileActions,
+  MobileDrawer: HeaderMobileDrawer,
+  Search: HeaderSearch,
+};

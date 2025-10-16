@@ -87,7 +87,6 @@ const Layout: React.FC<
             x: { type: 'tween', duration: 0.5, ease: 'easeInOut' },
             opacity: { duration: 0.3 },
           }}
-          onAnimationComplete={() => console.log('Animation complete')}
           className={cn(
             'fixed top-16 lg:top-[90px] left-0 right-0 bottom-0',
             ' bg-black text-white z-50 flex flex-col overflow-y-scroll',
@@ -106,7 +105,8 @@ const TriggerInput: React.FC<{
   className?: string;
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   value?: string;
-}> = ({ className, handleInputChange, value }) => {
+  id: string;
+}> = ({ className, handleInputChange, value, id }) => {
   const { isSearchMode, setIsSearchMode } = useSearchLayout();
 
   return (
@@ -119,7 +119,7 @@ const TriggerInput: React.FC<{
     >
       <Input
         label='search'
-        id='search'
+        id={`search-${id}`}
         className='bg-[#0A0D1299]'
         iconPosition='left'
         value={value}
