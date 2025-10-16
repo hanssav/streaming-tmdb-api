@@ -2,7 +2,7 @@
 import { Hero, ShowOrSkeleton } from '@/components/container';
 import { Button } from '@/components/ui/button';
 import { TypographyTitle } from '@/components/ui/typography';
-import { PATH } from '@/lib/constants';
+import { IMAGES } from '@/lib/constants';
 import {
   useDiscoverMovies,
   useInfiniteDiscoverMovies,
@@ -25,6 +25,7 @@ import {
   MovieCardSkeleton,
 } from '@/components/pages/skeleton';
 import { useRouter } from 'next/navigation';
+import { getSafeImage } from '@/lib/utils';
 
 const HomeClient: React.FC<{ initialRandomIndex: number }> = ({
   initialRandomIndex,
@@ -33,7 +34,9 @@ const HomeClient: React.FC<{ initialRandomIndex: number }> = ({
   const router = useRouter();
 
   const { data: discoverData, isLoading } = useDiscoverMovies({
-    sort_by: 'popularity.desc',
+    // sort_by: 'popularity.desc',
+    // sort_by: 'vote_average.desc',
+    sort_by: 'vote_count.desc',
   });
 
   const trending = React.useMemo(
@@ -62,11 +65,12 @@ const HomeClient: React.FC<{ initialRandomIndex: number }> = ({
 
   const params: DiscoverMoviesParams = React.useMemo(
     () => ({
-      sort_by: 'primary_release_date.desc',
+      sort_by: 'popularity.desc',
       'primary_release_date.lte': today,
       include_adult: false,
       language: 'en-US',
       limit: 20,
+      include_video: true,
     }),
     [today]
   );
@@ -93,7 +97,7 @@ const HomeClient: React.FC<{ initialRandomIndex: number }> = ({
       <ShowOrSkeleton isLoading={isLoading} skeleton={<HeroImageSkeleton />}>
         <Hero>
           <Hero.Image
-            src={`${PATH.TMDB_IMAGES_URL}${backdrop_path}`}
+            src={getSafeImage(backdrop_path, IMAGES.DEFAULT_BACKDROP)}
             alt='hero'
             className='rounded-xl shadow-lg'
           />
@@ -173,9 +177,9 @@ const HomeClient: React.FC<{ initialRandomIndex: number }> = ({
               isLoading={moviesLoading}
               skeleton={<MovieSkeleton />}
             >
-              {movies?.map(({ poster_path, title, vote_average, id }) => (
+              {movies?.map(({ poster_path, title, vote_average, id }, idx) => (
                 <MovieCard
-                  key={id}
+                  key={`${id}-${idx}`}
                   className='hover:scale-105 transition'
                   onClick={() => onClickMovie(id)}
                 >

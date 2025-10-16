@@ -67,10 +67,12 @@ export const useInfiniteDiscoverMovies = (params?: DiscoverMoviesParams) => {
   const movies = query.data?.pages.flatMap((res) => res.results);
   const allResults = query.data?.pages.flatMap((p) => p.results) || [];
 
+  const lastPage = query.data?.pages[query.data.pages.length - 1];
+
   const pagination = {
-    page: query.data?.pages[0]?.page || 1,
-    total_pages: query.data?.pages[0]?.total_pages || 1,
-    total_results: query.data?.pages[0]?.total_results || allResults.length,
+    page: lastPage?.page || 1,
+    total_pages: lastPage?.total_pages || 1,
+    total_results: lastPage?.total_results || allResults.length,
     results: allResults,
   };
 

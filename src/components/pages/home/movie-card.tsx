@@ -1,5 +1,5 @@
 import { Star } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, getSafeImage } from '@/lib/utils';
 import FlexibleImage from '../../container/image-wrapper';
 import { TypographyTitle, TypographySub } from '../../ui/typography';
 import { IMAGES, PATH } from '@/lib/constants';
@@ -54,7 +54,7 @@ MovieCard.displayName = 'MovieCard';
 MovieCard.Image = ({ src, alt, className }) => (
   <FlexibleImage
     alt={alt}
-    src={src ? `${PATH.TMDB_IMAGES_URL}${src}` : IMAGES.DEFAULT_IMAGE}
+    src={getSafeImage(src, IMAGES.DEFAULT_IMAGE)}
     className={cn('w-full h-auto min-h-[266px] lg:min-h-[321px]', className)}
     fit='cover'
   />
