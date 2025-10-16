@@ -1,4 +1,4 @@
-import Header from './header';
+import Header from '../pages/header';
 import Layout from './layout';
 import Footer from './footer';
 import FlexibleImage from './image-wrapper';

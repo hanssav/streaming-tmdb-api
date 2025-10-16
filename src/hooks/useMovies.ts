@@ -86,12 +86,19 @@ export const useMovieDetail = (id: number, enabled: boolean = true) => {
   });
 };
 
-export const useSearchMovies = (query: string, page: number = 1) => {
+export const useSearchMovies = ({
+  query,
+  page = 1,
+}: {
+  query: string;
+  page?: number;
+}) => {
   return useQuery({
     queryKey: movieKeys.search(query, page),
     queryFn: () => movieApi.searchMovies(query, page),
     enabled: query.length > 0,
     staleTime: 5 * 60 * 1000,
+    placeholderData: keepPreviousData,
   });
 };
 

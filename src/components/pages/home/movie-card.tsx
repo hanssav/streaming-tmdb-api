@@ -41,7 +41,7 @@ type MovieCardComponent = React.FC<MovieCardProps> & {
 const MovieCard: MovieCardComponent = ({ children, className, ...props }) => (
   <div
     className={cn(
-      'flex flex-col rounded-xl overflow-hidden gap-3 lg:gap-5',
+      'flex flex-col rounded-xl overflow-hidden gap-3 lg:gap-5 cursor-pointer',
       className
     )}
     {...props}

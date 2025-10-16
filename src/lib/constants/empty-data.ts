@@ -7,3 +7,9 @@ export const EMPTY_DATA = {
   btnLabel: 'Explore Movie',
   btnActionSrc: '/',
 };
+
+export const NO_DATA_FOUND = {
+  src: IMAGES.EMPTY_FAVORITE,
+  title: 'Data Not Found',
+  subtitle: 'Try other keywords',
+};
