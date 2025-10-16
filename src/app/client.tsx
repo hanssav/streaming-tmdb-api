@@ -35,7 +35,11 @@ const HomeClient: React.FC<{ initialRandomIndex: number }> = ({
   const { data: discoverData, isLoading } = useDiscoverMovies({
     sort_by: 'popularity.desc',
   });
-  const trending = discoverData?.results || [];
+
+  const trending = React.useMemo(
+    () => discoverData?.results || [],
+    [discoverData?.results]
+  );
 
   const [randomIndex, setRandomIndex] = React.useState(initialRandomIndex);
 
