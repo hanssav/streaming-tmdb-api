@@ -115,13 +115,18 @@ const DetailClient: React.FC<{ id: number }> = ({ id }) => {
                 <HeroAction
                   isFavorited={isFavorited}
                   onChange={onFavoriteChange}
+                  isLoading={addToFavorite.isPending}
                   className='hidden lg:flex lg:max-w-[220px]'
                 />
                 <ItemsCardMapping className='hidden lg:flex' />
               </div>
             </div>
 
-            <HeroAction isFavorited={isFavorited} onChange={onFavoriteChange} />
+            <HeroAction
+              isFavorited={isFavorited}
+              isLoading={addToFavorite.isPending}
+              onChange={onFavoriteChange}
+            />
             <ItemsCardMapping />
           </Hero.Content>
         </Hero>

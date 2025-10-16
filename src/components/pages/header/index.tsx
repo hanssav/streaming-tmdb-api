@@ -138,6 +138,10 @@ const Header = () => {
                             e.stopPropagation();
                             onChangeFavorite(movie.id, isFavorite(movie.id));
                           }}
+                          isLoading={
+                            addToFavorite.isPending &&
+                            addToFavorite.variables?.body.media_id === movie.id
+                          }
                           className='hidden lg:flex size-16 aspect-square self-center lg:ml-auto'
                         />
                       </div>
@@ -149,6 +153,10 @@ const Header = () => {
                         </Button>
                         <Card.HeartButton
                           isFavorited={isFavorite(movie.id)}
+                          isLoading={
+                            addToFavorite.isPending &&
+                            addToFavorite.variables?.body.media_id === movie.id
+                          }
                           onChange={(e) => {
                             e.stopPropagation();
                             onChangeFavorite(movie.id, isFavorite(movie.id));

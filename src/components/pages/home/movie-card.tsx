@@ -2,7 +2,7 @@ import { Star } from 'lucide-react';
 import { cn, getSafeImage } from '@/lib/utils';
 import FlexibleImage from '../../container/image-wrapper';
 import { TypographyTitle, TypographySub } from '../../ui/typography';
-import { IMAGES, PATH } from '@/lib/constants';
+import { IMAGES } from '@/lib/constants';
 import { ComponentPropsWithRef } from 'react';
 
 type MovieCardProps = {

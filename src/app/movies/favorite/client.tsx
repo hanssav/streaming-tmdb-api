@@ -14,12 +14,15 @@ import React from 'react';
 import { useFavorite } from './use-favorite';
 import { usePrefetchMovieDetail } from '@/hooks/useMovies';
 import { useRouter } from 'next/navigation';
+import { addToFavorite } from '@/services';
 
 const FavoriteClient = () => {
-  const { data, isFavorited, isLoading, onChangeFavorite } = useFavorite();
+  const { data, isFavorited, isLoading, onChangeFavorite, addToFavorite } =
+    useFavorite();
   const { prefetchMovieDetail } = usePrefetchMovieDetail();
   const router = useRouter();
 
+  console.log(addToFavorite.variables?.body.media_id, 'loading');
   return (
     <SectionWrapper className='space-y-6 pt-6'>
       <ShowOrSkeleton
@@ -70,6 +73,10 @@ const FavoriteClient = () => {
                   e.stopPropagation();
                   onChangeFavorite(fav.id);
                 }}
+                isLoading={
+                  addToFavorite.isPending &&
+                  addToFavorite.variables?.body.media_id === fav.id
+                }
                 className='hidden lg:flex size-16 aspect-square self-center lg:ml-auto'
               />
             </div>
@@ -85,6 +92,10 @@ const FavoriteClient = () => {
                   e.stopPropagation();
                   onChangeFavorite(fav.id);
                 }}
+                isLoading={
+                  addToFavorite.isPending &&
+                  addToFavorite.variables?.body.media_id === fav.id
+                }
               />
             </Card.Actions>
           </Card.CardMovie>

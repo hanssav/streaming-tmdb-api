@@ -4,6 +4,7 @@ import HeroDetailSkeleton from './hero-detail-skeleton';
 import CreditSkeleton from './credit-skeleton';
 import OverviewDetailSkeleton from './overview-detail-skeleton';
 import FavoriteCardSkeleton from './favorite-movie-card';
+import Spin from './loading-spin';
 
 export {
   MovieCardSkeleton,
@@ -12,4 +13,5 @@ export {
   CreditSkeleton,
   OverviewDetailSkeleton,
   FavoriteCardSkeleton,
+  Spin,
 };

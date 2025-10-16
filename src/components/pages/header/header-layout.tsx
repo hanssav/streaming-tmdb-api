@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 import { ArrowLeft, Menu, Search, X } from 'lucide-react';
 import React, { createContext, useContext, ReactNode } from 'react';
 import FlexibleImage from '../../container/image-wrapper';
-import { usePathname, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useHeader } from '@/hooks/useHeader';
 import { Button } from '../../ui/button';
 import { SearchMotion } from './search-layout';
@@ -40,15 +40,14 @@ const HeaderRoot = ({ children }: HeaderRootProps) => {
   const { isOpenMenu, setOpenMenu, isScrolled, isSearchMode, setIsSearchMode } =
     useHeader();
   const router = useRouter();
-  const pathname = usePathname();
 
-  const goHome = () => router.push('/');
-  const goFavorite = () => router.push('/movies/favorite');
-
-  React.useEffect(() => {
+  const clearLayout = () => {
     setOpenMenu(false);
     setIsSearchMode(false);
-  }, [pathname, setOpenMenu, setIsSearchMode]);
+  };
+
+  const goHome = () => (router.push('/'), clearLayout());
+  const goFavorite = () => (router.push('/movies/favorite'), clearLayout());
 
   return (
     <HeaderContext.Provider
