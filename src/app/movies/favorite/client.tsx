@@ -12,9 +12,13 @@ import { Movie } from '@/types';
 import { LucidePlayCircle } from 'lucide-react';
 import React from 'react';
 import { useFavorite } from './use-favorite';
+import { usePrefetchMovieDetail } from '@/hooks/useMovies';
+import { useRouter } from 'next/navigation';
 
 const FavoriteClient = () => {
   const { data, isFavorited, isLoading, onChangeFavorite } = useFavorite();
+  const { prefetchMovieDetail } = usePrefetchMovieDetail();
+  const router = useRouter();
 
   return (
     <SectionWrapper className='space-y-6 pt-6'>
@@ -25,7 +29,13 @@ const FavoriteClient = () => {
         Skeleton={FavoriteCardSkeleton}
       >
         {(fav: Movie) => (
-          <Card.CardMovie key={fav.id}>
+          <Card.CardMovie
+            key={fav.id}
+            onClick={async () => {
+              await prefetchMovieDetail(fav.id);
+              router.push(fav.id.toString());
+            }}
+          >
             <div className='flex gap-6'>
               <Card.Image
                 src={getSafeImage(
@@ -56,7 +66,10 @@ const FavoriteClient = () => {
               </Card.Content>
               <Card.HeartButton
                 isFavorited={isFavorited?.includes(fav.id)}
-                onChange={() => onChangeFavorite(fav.id)}
+                onChange={(e) => {
+                  e.stopPropagation();
+                  onChangeFavorite(fav.id);
+                }}
                 className='hidden lg:flex size-16 aspect-square self-center lg:ml-auto'
               />
             </div>
@@ -68,7 +81,10 @@ const FavoriteClient = () => {
               </Button>
               <Card.HeartButton
                 isFavorited={isFavorited?.includes(fav.id)}
-                onChange={() => onChangeFavorite(fav.id)}
+                onChange={(e) => {
+                  e.stopPropagation();
+                  onChangeFavorite(fav.id);
+                }}
               />
             </Card.Actions>
           </Card.CardMovie>

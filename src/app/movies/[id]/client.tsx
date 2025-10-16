@@ -20,7 +20,7 @@ import {
   useMovvieCreditDetail,
 } from '@/hooks/useMovies';
 import { APIConfiguration, IMAGES } from '@/lib/constants';
-import { cn, getSafeImage, handleImageError } from '@/lib/utils';
+import { cn, formatDate, getSafeImage, handleImageError } from '@/lib/utils';
 import { Calendar } from 'lucide-react';
 import React from 'react';
 
@@ -44,6 +44,7 @@ const ItemsCardMapping: React.FC<{ className?: string }> = ({
 const DetailClient: React.FC<{ id: number }> = ({ id }) => {
   const { data: favorites } = useAllFavorites(id);
   const [isFavorited, setIsFavorited] = React.useState(false);
+  const addToFavorite = useAddToFavorites();
 
   React.useEffect(() => {
     setIsFavorited(favorites?.id === Number(id));
@@ -79,7 +80,6 @@ const DetailClient: React.FC<{ id: number }> = ({ id }) => {
   const { data: credits } = useMovvieCreditDetail(id);
   const backdrop_url = backdrop_path ?? belongs_to_collection?.backdrop_path;
   const poster_url = poster_path ?? belongs_to_collection?.poster_path;
-  const addToFavorite = useAddToFavorites();
 
   return (
     <div className='flex flex-col lg:gap-12'>
@@ -107,7 +107,7 @@ const DetailClient: React.FC<{ id: number }> = ({ id }) => {
                 <div className='flex gap-1 items-center text-white'>
                   <Calendar className='size-4' />
                   <Hero.Subtitle
-                    label={release_date}
+                    label={formatDate(release_date)}
                     smSize='sm'
                     className='font-normal text-white'
                   />

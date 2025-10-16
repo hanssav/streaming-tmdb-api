@@ -26,23 +26,47 @@ import {
 } from '@/components/pages/skeleton';
 import { useRouter } from 'next/navigation';
 
-const HomeClient: React.FC<{ randomIndex: number }> = ({ randomIndex }) => {
+const HomeClient: React.FC<{ initialRandomIndex: number }> = ({
+  initialRandomIndex,
+}) => {
   const today = new Date().toISOString().split('T')[0];
   const router = useRouter();
 
-  const { data, isLoading } = useDiscoverMovies({
+  const { data: discoverData, isLoading } = useDiscoverMovies({
     sort_by: 'popularity.desc',
   });
-  const trending = data?.results || [];
-  const { title, backdrop_path, overview } = trending?.[randomIndex] || {};
+  const trending = discoverData?.results || [];
 
-  const [params] = React.useState<DiscoverMoviesParams>({
-    sort_by: 'primary_release_date.desc',
-    'primary_release_date.lte': today,
-    include_adult: false,
-    language: 'en-US',
-    limit: 20,
-  });
+  const [randomIndex, setRandomIndex] = React.useState(initialRandomIndex);
+
+  React.useEffect(() => {
+    if (!trending.length) return;
+
+    const interval = setInterval(() => {
+      let nextIndex = Math.floor(Math.random() * trending.length);
+      if (nextIndex === randomIndex) {
+        nextIndex = (nextIndex + 1) % trending.length;
+      }
+      setRandomIndex(nextIndex);
+    }, 5_000);
+
+    return () => clearInterval(interval);
+  }, [trending, randomIndex]);
+
+  const featuredMovie = trending[randomIndex];
+  const { title, backdrop_path, overview } = featuredMovie || {};
+
+  const params: DiscoverMoviesParams = React.useMemo(
+    () => ({
+      sort_by: 'primary_release_date.desc',
+      'primary_release_date.lte': today,
+      include_adult: false,
+      language: 'en-US',
+      limit: 20,
+    }),
+    [today]
+  );
+
   const {
     movies,
     isLoading: moviesLoading,
@@ -57,7 +81,6 @@ const HomeClient: React.FC<{ randomIndex: number }> = ({ randomIndex }) => {
     await prefetchMovieDetail(id);
     router.push(`/movies/${id}`);
   };
-
   const MovieSkeleton = ({ limit = 20 }) =>
     Array.from({ length: limit }).map((_, i) => <MovieCardSkeleton key={i} />);
 
@@ -73,7 +96,10 @@ const HomeClient: React.FC<{ randomIndex: number }> = ({ randomIndex }) => {
           <Hero.Overlay />
           <Hero.Content className='w-full max-w-[361px] lg:max-w-[635px]'>
             <Hero.Title label={title} className='text-white' />
-            <Hero.Subtitle label={overview} className='text-gray-300' />
+            <Hero.Subtitle
+              label={overview}
+              className='text-gray-300 line-clamp-3'
+            />
             <Hero.Actions className='mt-4'>
               <Button className='lg:flex-1' size='lg'>
                 Watch Trailer
@@ -163,12 +189,10 @@ const HomeClient: React.FC<{ randomIndex: number }> = ({ randomIndex }) => {
                   </MovieCard.Content>
                 </MovieCard>
               ))}
-
               {isFetchingNextPage && <MovieSkeleton />}
             </ShowOrSkeleton>
           </div>
         </div>
-
         <SectionWrapper.Overlay />
         {movies && movies.length > 0 && (
           <div className='absolute bottom-52 left-1/2 transform -translate-x-1/2 z-20'>

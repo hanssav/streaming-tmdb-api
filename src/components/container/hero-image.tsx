@@ -3,6 +3,7 @@ import { cn } from '@/lib/utils';
 import FlexibleImage, { FlexibleImageProps } from './image-wrapper';
 import { TypographySub, TypographyTitle } from '../ui/typography';
 import { TypographySubProps, TypographyTitleProps } from '../ui/types';
+import { AnimatePresence, motion } from 'framer-motion';
 
 type HeroProps = {
   children: ReactNode;
@@ -37,17 +38,29 @@ Hero.Image = ({
   className,
   ...props
 }: HeroImageProps) => (
-  <FlexibleImage
-    src={src}
-    alt={alt}
-    fit={fit}
-    className={cn(
-      'w-full h-full min-h-[392px] lg:h-[810px] object-[center_80%]',
-      className
-    )}
-    {...props}
-  />
+  <AnimatePresence mode='wait'>
+    <motion.div
+      key={src}
+      initial={{ opacity: 0, scale: 1.05 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.9, ease: 'easeOut' }}
+      className={cn(
+        'w-full h-[392px] lg:h-[810px] overflow-hidden relative',
+        className
+      )}
+    >
+      <FlexibleImage
+        src={src}
+        alt={alt}
+        fit={fit}
+        className='w-full h-full object-[center_80%] object-cover'
+        {...props}
+      />
+    </motion.div>
+  </AnimatePresence>
 );
+
 Hero.Image.displayName = 'Hero.Image';
 
 type HeroOverlayProps = {
@@ -57,7 +70,7 @@ type HeroOverlayProps = {
 Hero.Overlay = ({ className }: HeroOverlayProps) => (
   <div
     className={cn(
-      'absolute inset-0 z-10 w-full h-full min-h-[345px] lg:h-[810px]',
+      'absolute inset-0 z-10 w-full h-full min-h-[345px] lg:h-[910px]',
       className
     )}
   >

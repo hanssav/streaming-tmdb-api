@@ -54,7 +54,7 @@ const Home = async () => {
   return (
     <div className='w-screen relative'>
       <HydrationBoundary state={dehydratedState}>
-        <HomeClient randomIndex={randomIndex} />
+        <HomeClient initialRandomIndex={randomIndex} />
       </HydrationBoundary>
     </div>
   );

@@ -11,10 +11,10 @@ const CardMovie: React.FC<
     children: React.ReactNode;
     className?: string;
   } & ComponentPropsWithoutRef<'div'>
-> = ({ children, className }) => {
+> = ({ children, className, ...props }) => {
   return (
-    <div className={cn('flex flex-col gap-6 lg:gap-8', className)}>
-      {children}{' '}
+    <div className={cn('flex flex-col gap-6 lg:gap-8', className)} {...props}>
+      {children}
     </div>
   );
 };
@@ -69,14 +69,14 @@ const Actions: React.FC<{ className?: string; children: React.ReactNode }> = ({
 const HeartButton: React.FC<{
   className?: string;
   isFavorited?: number | boolean;
-  onChange?: () => void;
+  onChange?: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }> = ({ className, isFavorited, onChange }) => {
   return (
     <button
       type='button'
       onClick={onChange}
       className={cn(
-        'bg-neutral-900 transition-all duration-300 hover:scale-105',
+        'bg-neutral-900 transition-all duration-300 hover:scale-105 cursor-pointer',
         'rounded-full flex items-center justify-center relative size-11',
         className
       )}

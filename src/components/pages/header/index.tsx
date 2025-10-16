@@ -10,6 +10,7 @@ import {
   movieKeys,
   useAddToFavorites,
   useAllFavorites,
+  usePrefetchMovieDetail,
   useSearchMovies,
 } from '@/hooks/useMovies';
 import { Card } from '../favorite/card';
@@ -20,8 +21,10 @@ import EmptyData from '../../container/empty-data';
 import { NO_DATA_FOUND } from '@/lib/constants/empty-data';
 import { HeaderLayout } from './header-layout';
 import { useQueryClient } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
 
 const Header = () => {
+  const router = useRouter();
   const account_id = APIConfiguration.mock_account_id;
   const [filter, setFilter] = React.useState<{ query: string; page: number }>({
     query: '',
@@ -75,6 +78,8 @@ const Header = () => {
     [favoriteIds]
   );
 
+  const { prefetchMovieDetail } = usePrefetchMovieDetail();
+
   return (
     <HeaderLayout.Root>
       <HeaderLayout.Container>
@@ -91,7 +96,13 @@ const Header = () => {
               <div className='space-y-6'>
                 {data?.results?.length ? (
                   data.results.map((movie: Movie) => (
-                    <Card.CardMovie key={movie.id}>
+                    <Card.CardMovie
+                      key={movie.id}
+                      onClick={async () => {
+                        await prefetchMovieDetail(movie.id);
+                        router.push(`/movies/${movie.id}`);
+                      }}
+                    >
                       <div className='flex gap-6'>
                         <Card.Image
                           src={getSafeImage(
@@ -123,9 +134,10 @@ const Header = () => {
                         </Card.Content>
                         <Card.HeartButton
                           isFavorited={isFavorite(movie.id)}
-                          onChange={() =>
-                            onChangeFavorite(movie.id, isFavorite(movie.id))
-                          }
+                          onChange={(e) => {
+                            e.stopPropagation();
+                            onChangeFavorite(movie.id, isFavorite(movie.id));
+                          }}
                           className='hidden lg:flex size-16 aspect-square self-center lg:ml-auto'
                         />
                       </div>
@@ -137,9 +149,10 @@ const Header = () => {
                         </Button>
                         <Card.HeartButton
                           isFavorited={isFavorite(movie.id)}
-                          onChange={() =>
-                            onChangeFavorite(movie.id, isFavorite(movie.id))
-                          }
+                          onChange={(e) => {
+                            e.stopPropagation();
+                            onChangeFavorite(movie.id, isFavorite(movie.id));
+                          }}
                         />
                       </Card.Actions>
                     </Card.CardMovie>

@@ -23,3 +23,12 @@ export const getSafeImage = (
   if (!path) return fallback;
   return baseUrl ? `${baseUrl}${path}` : path;
 };
+
+export function formatDate(dateStr: string) {
+  const date = new Date(dateStr);
+  return date.toLocaleDateString('id-ID', {
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+  });
+}
