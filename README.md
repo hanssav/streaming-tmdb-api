@@ -1,5 +1,6 @@
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/GWV6bCjD)
 [![Open in Visual Studio Code](https://classroom.github.com/assets/open-in-vscode-2e0aaae1b6195c2367325f4f02e2d04e9abb55f0b24a779b69b11b9e10269abc.svg)](https://classroom.github.com/online_ide?assignment_repo_id=21031683&assignment_repo_type=AssignmentRepo)
+
 # Challenge 9 - Slicing Figma design into code with Next JS
 
 # Description
@@ -12,6 +13,8 @@ You'll be provided with a basic project setup, and your task will be to implemen
 The design for this assignment is located at the following Figma link:
 
 [Figma Design Link](https://www.figma.com/design/PjR3Adxi8eZbS2cmdPuG52/Front-End-Developer-Test---Movie-Explorer-App?node-id=8411-143671&p=f)
+
+[Deployment Link](https://streaming-tmdb-api.vercel.app/)
 
 The goal is to assess your ability to:
 
