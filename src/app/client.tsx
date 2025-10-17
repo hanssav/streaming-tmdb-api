@@ -25,7 +25,7 @@ import {
   MovieCardSkeleton,
 } from '@/components/pages/skeleton';
 import { useRouter } from 'next/navigation';
-import { getSafeImage } from '@/lib/utils';
+import { cn, getSafeImage } from '@/lib/utils';
 
 const HomeClient: React.FC<{ initialRandomIndex: number }> = ({
   initialRandomIndex,
@@ -178,7 +178,12 @@ const HomeClient: React.FC<{ initialRandomIndex: number }> = ({
       <SectionWrapper className='relative overflow-visible min-h-[600px]'>
         <TypographyTitle label='New Release' />
         <div className='relative'>
-          <div className='grid grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-[50px] relative min-h-[500px]'>
+          <div
+            className={cn(
+              'grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5',
+              'gap-8 lg:gap-[50px] relative min-h-[500px]'
+            )}
+          >
             <ShowOrSkeleton
               isLoading={moviesLoading}
               skeleton={<MovieSkeleton />}

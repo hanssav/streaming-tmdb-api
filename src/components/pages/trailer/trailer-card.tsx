@@ -298,7 +298,10 @@ type ListProps = {
 
 const List: React.FC<ListProps> = ({ children, className }) => (
   <div
-    className={cn('space-y-3 overflow-y-auto custom-scrollbar pr-2', className)}
+    className={cn(
+      'space-y-3 overflow-y-auto custom-scrollbar pr-2 overflow-x-hidden',
+      className
+    )}
   >
     {children}
   </div>

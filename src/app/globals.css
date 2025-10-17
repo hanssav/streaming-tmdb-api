@@ -83,3 +83,19 @@
   --color-primary-300: #961200;
   --color-primary-400: #640c00;
 }
+
+@layer utilities {
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: linear-gradient(to bottom, #961200, #c41800);
+    border-radius: 3px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(to bottom, #c41800, #961200);
+  }
+}

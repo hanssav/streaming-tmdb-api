@@ -1,12 +1,9 @@
 import { SectionWrapper } from '@/components/container';
-import { TypographyTitle } from '@/components/ui/typography';
 import React from 'react';
 
-const Loading = () => {
+export const Loading = () => {
   return (
-    <SectionWrapper className='py-6 mt-[90px] pt-0 lg:pt-[64px] min-h-[calc(100vh-8rem-5rem)]'>
-      <TypographyTitle label='Trailer' />
-
+    <SectionWrapper className='py-6 pt-0 min-h-[calc(100vh-8rem-5rem)]'>
       <div className='flex flex-col lg:flex-row gap-8'>
         <div className='flex-1 lg:flex-[0_0_68%]'>
           <div className='w-full aspect-video bg-gradient-to-br from-gray-800 to-gray-900 animate-pulse rounded-2xl' />
@@ -28,5 +25,3 @@ const Loading = () => {
     </SectionWrapper>
   );
 };
-
-export default Loading;

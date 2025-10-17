@@ -27,7 +27,7 @@ const HeroAction: React.FC<{
         type='button'
         onClick={onChange}
         className={cn(
-          'bg-neutral-900 transition-all duration-300 hover:scale-105',
+          'bg-neutral-900 transition-all duration-300 hover:scale-105 cursor-pointer',
           'rounded-full flex items-center justify-center relative size-11'
         )}
       >

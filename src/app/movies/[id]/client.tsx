@@ -5,7 +5,7 @@ import {
   SectionWrapper,
   ShowOrSkeleton,
 } from '@/components/container';
-import { CreditsCard, ItemsCard, movieMeta } from '@/components/pages/detail';
+import { CreditsCard, ItemsCardMapping } from '@/components/pages/detail';
 import HeroAction from '@/components/pages/detail/hero-actions';
 import {
   CreditSkeleton,
@@ -13,62 +13,17 @@ import {
   OverviewDetailSkeleton,
 } from '@/components/pages/skeleton';
 import { TypographySub, TypographyTitle } from '@/components/ui/typography';
-import {
-  useAddToFavorites,
-  useAllFavorites,
-  useMovieDetail,
-  useMovvieCreditDetail,
-} from '@/hooks/useMovies';
-import { APIConfiguration, IMAGES } from '@/lib/constants';
+import { useMovieDetail, useMovvieCreditDetail } from '@/hooks/useMovies';
+import { IMAGES } from '@/lib/constants';
 import { cn, formatDate, getSafeImage, handleImageError } from '@/lib/utils';
 import { Calendar } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import React from 'react';
-
-const ItemsCardMapping: React.FC<{ className?: string }> = ({
-  className = '',
-}) => (
-  <div className={cn('w-full flex flex-row gap-3 lg:hidden', className)}>
-    {movieMeta.map((meta, idx) => {
-      const Icon = meta.icon;
-      return (
-        <ItemsCard key={idx} className='flex-1'>
-          <ItemsCard.Icon icon={Icon} className='lg:size-8' />
-          <TypographySub smSize='xs' lgSize='md' label={meta.label} />
-          <TypographyTitle smSize='lg' lgSize='xl' label={meta.value} />
-        </ItemsCard>
-      );
-    })}
-  </div>
-);
+import { useUpdateData } from './use-update-data';
 
 const DetailClient: React.FC<{ id: number }> = ({ id }) => {
   const router = useRouter();
-  const { data: favorites } = useAllFavorites(id);
-  const [isFavorited, setIsFavorited] = React.useState(false);
-  const addToFavorite = useAddToFavorites();
-
-  React.useEffect(() => {
-    setIsFavorited(favorites?.id === Number(id));
-  }, [favorites?.id, id]);
-
-  const onFavoriteChange = () => {
-    setIsFavorited((prev) => {
-      const newStatus = !prev;
-
-      addToFavorite.mutate({
-        account_id: APIConfiguration.mock_account_id,
-        body: {
-          media_type: 'movie',
-          media_id: id,
-          favorite: newStatus,
-        },
-      });
-
-      return newStatus;
-    });
-  };
-
+  const { isFavorited, onFavoriteChange, addToFavorite } = useUpdateData(id);
   const { data, isLoading } = useMovieDetail(id);
   const {
     title = '',

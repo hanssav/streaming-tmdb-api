@@ -12,6 +12,7 @@ export const movieMeta: MovieMetaItem[] = [
     icon: Star,
     label: 'Rating',
     value: '6.2/10',
+    className: 'fill-[#E4A802] stroke-[#E4A802]',
   },
   {
     icon: Film,
