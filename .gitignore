@@ -42,3 +42,4 @@ next-env.d.ts
 
 src/middleware.ts
 src/app/api/auth
+src/app/_temp

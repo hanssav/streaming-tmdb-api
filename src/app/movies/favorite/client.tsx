@@ -22,7 +22,6 @@ const FavoriteClient = () => {
   const { prefetchMovieDetail } = usePrefetchMovieDetail();
   const router = useRouter();
 
-  console.log(addToFavorite.variables?.body.media_id, 'loading');
   return (
     <SectionWrapper className='space-y-6 pt-6'>
       <ShowOrSkeleton
@@ -62,7 +61,14 @@ const FavoriteClient = () => {
                   size='sm'
                   lgSize='md'
                 />
-                <Button className='hidden lg:flex p-2' size='lg'>
+                <Button
+                  className='hidden lg:flex p-2'
+                  size='lg'
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    router.push(`/movies/trailer/${fav.id}`);
+                  }}
+                >
                   Watch Trailer
                   <LucidePlayCircle />
                 </Button>
@@ -82,7 +88,14 @@ const FavoriteClient = () => {
             </div>
 
             <Card.Actions className='lg:hidden'>
-              <Button className='flex-1 p-2' size='lg'>
+              <Button
+                className='flex-1 p-2'
+                size='lg'
+                onClick={(e) => {
+                  e.stopPropagation();
+                  router.push(`/movies/trailer/${fav.id}`);
+                }}
+              >
                 Watch Trailer
                 <LucidePlayCircle />
               </Button>

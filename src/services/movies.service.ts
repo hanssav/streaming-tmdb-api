@@ -51,6 +51,13 @@ export const movieApi = {
     });
     return response.data;
   },
+
+  getVideo: async (movie_id: number) => {
+    const response = await apiClient.get(`/movies/video`, {
+      params: { movie_id },
+    });
+    return response.data;
+  },
 };
 
 // Alternative: Direct TMDB API calls (if skip middleware)
@@ -122,6 +129,11 @@ export const getAllFavorites = async (account_id: number): Promise<Movie[]> => {
   return response.data.results;
 };
 
+export const getVideo = async (movie_id: number): Promise<MoviesResponse> => {
+  const response = await apiServer.get(`/movie/${movie_id}/videos`);
+  return response.data;
+};
+
 export const ServerService = {
   discoverMovies,
   getMovieById,
@@ -129,4 +141,5 @@ export const ServerService = {
   getMovieByIdWithCredits,
   addToFavorite,
   getAllFavorites,
+  getVideo,
 };

@@ -109,7 +109,13 @@ const HomeClient: React.FC<{ initialRandomIndex: number }> = ({
               className='text-gray-300 line-clamp-3'
             />
             <Hero.Actions className='mt-4'>
-              <Button className='lg:flex-1' size='lg'>
+              <Button
+                className='lg:flex-1'
+                size='lg'
+                onClick={() =>
+                  router.push(`/movies/trailer/${trending?.[randomIndex]?.id}`)
+                }
+              >
                 Watch Trailer
                 <LucidePlayCircle />
               </Button>
@@ -172,7 +178,7 @@ const HomeClient: React.FC<{ initialRandomIndex: number }> = ({
       <SectionWrapper className='relative overflow-visible min-h-[600px]'>
         <TypographyTitle label='New Release' />
         <div className='relative'>
-          <div className='grid grid-cols-2 lg:grid-cols-5 gap-8 relative min-h-[500px]'>
+          <div className='grid grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-[50px] relative min-h-[500px]'>
             <ShowOrSkeleton
               isLoading={moviesLoading}
               skeleton={<MovieSkeleton />}

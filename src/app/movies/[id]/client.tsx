@@ -22,6 +22,7 @@ import {
 import { APIConfiguration, IMAGES } from '@/lib/constants';
 import { cn, formatDate, getSafeImage, handleImageError } from '@/lib/utils';
 import { Calendar } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import React from 'react';
 
 const ItemsCardMapping: React.FC<{ className?: string }> = ({
@@ -42,6 +43,7 @@ const ItemsCardMapping: React.FC<{ className?: string }> = ({
 );
 
 const DetailClient: React.FC<{ id: number }> = ({ id }) => {
+  const router = useRouter();
   const { data: favorites } = useAllFavorites(id);
   const [isFavorited, setIsFavorited] = React.useState(false);
   const addToFavorite = useAddToFavorites();
@@ -116,6 +118,7 @@ const DetailClient: React.FC<{ id: number }> = ({ id }) => {
                   isFavorited={isFavorited}
                   onChange={onFavoriteChange}
                   isLoading={addToFavorite.isPending}
+                  onWatchTrailer={() => router.push(`/movies/trailer/${id}`)}
                   className='hidden lg:flex lg:max-w-[220px]'
                 />
                 <ItemsCardMapping className='hidden lg:flex' />
@@ -126,6 +129,7 @@ const DetailClient: React.FC<{ id: number }> = ({ id }) => {
               isFavorited={isFavorited}
               isLoading={addToFavorite.isPending}
               onChange={onFavoriteChange}
+              onWatchTrailer={() => router.push(`/movies/trailer/${id}`)}
             />
             <ItemsCardMapping />
           </Hero.Content>

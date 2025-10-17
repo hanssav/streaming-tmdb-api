@@ -127,7 +127,13 @@ const Header = () => {
                             size='sm'
                             lgSize='md'
                           />
-                          <Button className='hidden lg:flex p-2' size='lg'>
+                          <Button
+                            className='hidden lg:flex p-2'
+                            size='lg'
+                            onClick={() =>
+                              router.push(`/movies/trailer/${movie.id}`)
+                            }
+                          >
                             Watch Trailer
                             <LucidePlayCircle />
                           </Button>
@@ -147,7 +153,13 @@ const Header = () => {
                       </div>
 
                       <Card.Actions className='lg:hidden'>
-                        <Button className='flex-1 p-2' size='lg'>
+                        <Button
+                          className='flex-1 p-2'
+                          size='lg'
+                          onClick={() =>
+                            router.push(`/movies/trailer/${movie.id}`)
+                          }
+                        >
                           Watch Trailer
                           <LucidePlayCircle />
                         </Button>

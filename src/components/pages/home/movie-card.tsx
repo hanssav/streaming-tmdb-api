@@ -55,7 +55,10 @@ MovieCard.Image = ({ src, alt, className }) => (
   <FlexibleImage
     alt={alt}
     src={getSafeImage(src, IMAGES.DEFAULT_IMAGE)}
-    className={cn('w-full h-auto min-h-[266px] lg:min-h-[321px]', className)}
+    className={cn(
+      'w-full h-full min-h-[266px] lg:min-h-[321px] aspect-9/14',
+      className
+    )}
     fit='cover'
   />
 );

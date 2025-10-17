@@ -18,10 +18,11 @@ export const movieKeys = {
   search: (query: string, page: number) =>
     ['movies', 'search', query, page] as const,
   credits: (movie_id: number) => ['movies', 'credits', movie_id] as const,
-
   addFavorite: () => ['favorites', 'add'] as const,
   allFavorites: (account_id?: number, movie_id?: number) =>
     ['favorites', 'all', account_id, movie_id] as const,
+
+  getVideoTrailer: (movie_id: number) => ['videoTrailer', movie_id],
 };
 
 export const useDiscoverMovies = (params?: DiscoverMoviesParams) => {
@@ -157,6 +158,27 @@ export const useAllFavorites = (movie_id?: number, acc_id?: number) => {
     queryKey: movieKeys.allFavorites(account_id, movie_id),
     queryFn: () => movieApi.getAllFavorites(movie_id, account_id),
     enabled: account_id > 0,
+    staleTime: 60_000,
+  });
+};
+
+export const usePrefetcVideo = () => {
+  const queryClient = useQueryClient();
+
+  const prefetch = (movie_id: number) => {
+    queryClient.prefetchQuery({
+      queryKey: movieKeys.getVideoTrailer(movie_id),
+      queryFn: () => movieApi.getVideo(movie_id),
+    });
+  };
+
+  return { prefetch };
+};
+
+export const useGetVideoTrailer = (movie_id: number) => {
+  return useQuery({
+    queryKey: movieKeys.getVideoTrailer(movie_id),
+    queryFn: () => movieApi.getVideo(movie_id),
     staleTime: 60_000,
   });
 };

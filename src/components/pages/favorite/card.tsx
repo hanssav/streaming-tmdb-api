@@ -15,7 +15,10 @@ const CardMovie: React.FC<
   } & ComponentPropsWithoutRef<'div'>
 > = ({ children, className, ...props }) => {
   return (
-    <div className={cn('flex flex-col gap-6 lg:gap-8', className)} {...props}>
+    <div
+      className={cn('flex flex-col gap-6 lg:gap-8 cursor-pointer', className)}
+      {...props}
+    >
       {children}
     </div>
   );

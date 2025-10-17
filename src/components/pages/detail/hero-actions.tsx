@@ -9,15 +9,17 @@ const HeroAction: React.FC<{
   onChange: () => void;
   className?: string;
   isLoading: boolean;
+  onWatchTrailer: () => void;
 }> = ({
   isFavorited = false,
   onChange,
   className = 'lg:hidden',
   isLoading,
+  onWatchTrailer,
 }) => {
   return (
     <Hero.Actions className={cn('flex flex-row gap-4 items-center', className)}>
-      <Button className='flex-1' size='lg'>
+      <Button className='flex-1' size='lg' onClick={onWatchTrailer}>
         Watch Trailer
         <LucidePlayCircle />
       </Button>
