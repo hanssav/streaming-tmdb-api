@@ -1,5 +1,5 @@
 // client api service
-import apiClient from '@/lib/client-axios';
+import apiClient from '@/lib/axios/client';
 import {
   DiscoverMoviesParams,
   FavoriteBody,
@@ -8,6 +8,7 @@ import {
   MovieDetailResponse,
   MoviesResponse,
 } from '@/types';
+import { APIConfiguration } from '@/lib/constants';
 
 export const movieApi = {
   discoverMovies: async (
@@ -60,23 +61,8 @@ export const movieApi = {
   },
 };
 
-// Alternative: Direct TMDB API calls (if skip middleware)
-export const movieApiDirect = {
-  discoverMovies: async (
-    params?: DiscoverMoviesParams
-  ): Promise<MoviesResponse> => {
-    const response = await fetch(
-      'http://localhost:3000/api/movies/discover?' +
-        new URLSearchParams(params ? (params as Record<string, string>) : {})
-    );
-    if (!response.ok) throw new Error('Failed to fetch');
-    return response.json();
-  },
-};
-
 // (Server-side service)
-import apiServer from '@/lib/server-axios';
-import { APIConfiguration } from '@/lib/constants';
+import apiServer from '@/lib/axios/server';
 
 export const discoverMovies = async (
   params: DiscoverMoviesParams = {}
