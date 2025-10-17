@@ -1,5 +1,6 @@
 'use client';
 import React from 'react';
+import { SectionWrapper } from '@/components/container';
 import { Hero, ShowOrSkeleton } from '@/components/container';
 import { Button } from '@/components/ui/button';
 import { TypographyTitle } from '@/components/ui/typography';
@@ -17,15 +18,13 @@ import {
   CarouselPrevious,
 } from '@/components/ui/carousel';
 import { MappingMovieSkeleton, MovieCard } from '@/components/pages/home';
-import SectionWrapper from '@/components/container/section-wrapper';
 import {
   HeroImageSkeleton,
   MovieCardSkeleton,
 } from '@/components/pages/skeleton';
 import { useRouter } from 'next/navigation';
 import { cn, getSafeImage } from '@/lib/utils';
-import { useDiscoverData } from './hooks/use-discover-data';
-import { useInfiniteParams } from './hooks/use-infinite-params';
+import { useDiscoverData, useInfiniteParams } from './hooks';
 
 const HomeClient: React.FC<{ initialRandomIndex: number }> = ({
   initialRandomIndex,

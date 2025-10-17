@@ -1,10 +1,10 @@
+import React from 'react';
+import FavoriteClient from './client';
 import {
   dehydrate,
   HydrationBoundary,
   QueryClient,
 } from '@tanstack/react-query';
-import React from 'react';
-import FavoriteClient from './client';
 import { TypographyTitle } from '@/components/ui/typography';
 import { SectionWrapper } from '@/components/container';
 import { movieKeys } from '@/hooks/useMovies';
