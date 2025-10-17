@@ -3,16 +3,17 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
   request: NextRequest,
-  context: { params: Promise<{ id: number }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = await context.params;
+    const { id } = await params;
+    const movie_id = Number(id);
 
-    const data = await ServerService.getMovieByIdWithCredits(id);
+    const data = await ServerService.getMovieByIdWithCredits(movie_id);
     return NextResponse.json(data, { status: 200 });
   } catch (error) {
     const message =
-      error instanceof Error ? error.message : 'Failed to fetch moviec credits';
+      error instanceof Error ? error.message : 'Failed to fetch movie credits';
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

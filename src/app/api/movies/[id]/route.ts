@@ -3,12 +3,12 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
   request: NextRequest,
-  context: { params: Promise<{ id: number }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = await context.params;
-
-    const data = await ServerService.getMovieById(id);
+    const { id } = await params;
+    const movie_id = Number(id);
+    const data = await ServerService.getMovieById(movie_id);
     return NextResponse.json(data, { status: 200 });
   } catch (error) {
     const message =

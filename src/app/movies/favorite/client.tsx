@@ -14,7 +14,6 @@ import React from 'react';
 import { useFavorite } from './use-favorite';
 import { usePrefetchMovieDetail } from '@/hooks/useMovies';
 import { useRouter } from 'next/navigation';
-import { addToFavorite } from '@/services';
 
 const FavoriteClient = () => {
   const { data, isFavorited, isLoading, onChangeFavorite, addToFavorite } =
