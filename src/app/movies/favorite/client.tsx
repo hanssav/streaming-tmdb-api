@@ -11,7 +11,7 @@ import { getSafeImage, handleImageError } from '@/lib/utils';
 import { Movie } from '@/types';
 import { LucidePlayCircle } from 'lucide-react';
 import React from 'react';
-import { useFavorite } from './use-favorite';
+import { useFavorite } from './hooks';
 import { usePrefetchMovieDetail } from '@/hooks/useMovies';
 import { useRouter } from 'next/navigation';
 

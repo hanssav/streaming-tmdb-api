@@ -10,7 +10,7 @@ import {
   VideoCard,
 } from '@/components/pages/trailer';
 import { Video } from '@/components/pages/trailer/video-card';
-import { useTrailer } from './use-trailer';
+import { useTrailer } from './hooks';
 
 const TrailerClient: React.FC<{ id: number }> = ({ id }) => {
   const { allVideos, data, isLoading, selectedVideo, setSelectedVideo } =

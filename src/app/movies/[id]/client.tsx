@@ -19,7 +19,7 @@ import { cn, formatDate, getSafeImage, handleImageError } from '@/lib/utils';
 import { Calendar } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import React from 'react';
-import { useUpdateData } from './use-update-data';
+import { useUpdateData } from './hooks';
 
 const DetailClient: React.FC<{ id: number }> = ({ id }) => {
   const router = useRouter();
