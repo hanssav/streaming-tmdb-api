@@ -49,7 +49,7 @@ const HeaderRoot = ({ children }: HeaderRootProps) => {
 
   React.useEffect(() => clearLayout(), [pathname, clearLayout]);
 
-  const goHome = () => (router.push('/'), clearLayout());
+  const goHome = () => (router.push('/home'), clearLayout());
   const goFavorite = () => (router.push('/movies/favorite'), clearLayout());
 
   return (

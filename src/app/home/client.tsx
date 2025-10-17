@@ -1,15 +1,14 @@
 'use client';
+import React from 'react';
 import { Hero, ShowOrSkeleton } from '@/components/container';
 import { Button } from '@/components/ui/button';
 import { TypographyTitle } from '@/components/ui/typography';
 import { IMAGES } from '@/lib/constants';
 import {
-  useDiscoverMovies,
   useInfiniteDiscoverMovies,
   usePrefetchMovieDetail,
 } from '@/hooks/useMovies';
 import { LucidePlayCircle } from 'lucide-react';
-import React from 'react';
 import {
   Carousel,
   CarouselContent,
@@ -17,64 +16,26 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@/components/ui/carousel';
-import { MovieCard } from '@/components/pages/home';
+import { MappingMovieSkeleton, MovieCard } from '@/components/pages/home';
 import SectionWrapper from '@/components/container/section-wrapper';
-import { DiscoverMoviesParams } from '@/types';
 import {
   HeroImageSkeleton,
   MovieCardSkeleton,
 } from '@/components/pages/skeleton';
 import { useRouter } from 'next/navigation';
 import { cn, getSafeImage } from '@/lib/utils';
+import { useDiscoverData } from './hooks/use-discover-data';
+import { useInfiniteParams } from './hooks/use-infinite-params';
 
 const HomeClient: React.FC<{ initialRandomIndex: number }> = ({
   initialRandomIndex,
 }) => {
-  const today = new Date().toISOString().split('T')[0];
   const router = useRouter();
-
-  const { data: discoverData, isLoading } = useDiscoverMovies({
-    // sort_by: 'popularity.desc',
-    // sort_by: 'vote_average.desc',
-    sort_by: 'vote_count.desc',
-  });
-
-  const trending = React.useMemo(
-    () => discoverData?.results || [],
-    [discoverData?.results]
-  );
-
-  const [randomIndex, setRandomIndex] = React.useState(initialRandomIndex);
-
-  React.useEffect(() => {
-    if (!trending.length) return;
-
-    const interval = setInterval(() => {
-      let nextIndex = Math.floor(Math.random() * trending.length);
-      if (nextIndex === randomIndex) {
-        nextIndex = (nextIndex + 1) % trending.length;
-      }
-      setRandomIndex(nextIndex);
-    }, 5_000);
-
-    return () => clearInterval(interval);
-  }, [trending, randomIndex]);
-
-  const featuredMovie = trending[randomIndex];
+  const { featuredMovie, isLoading, mixedIdx, trending } =
+    useDiscoverData(initialRandomIndex);
   const { title, backdrop_path, overview } = featuredMovie || {};
 
-  const params: DiscoverMoviesParams = React.useMemo(
-    () => ({
-      sort_by: 'popularity.desc',
-      'primary_release_date.lte': today,
-      include_adult: false,
-      language: 'en-US',
-      limit: 20,
-      include_video: true,
-    }),
-    [today]
-  );
-
+  const { params } = useInfiniteParams();
   const {
     movies,
     isLoading: moviesLoading,
@@ -89,8 +50,6 @@ const HomeClient: React.FC<{ initialRandomIndex: number }> = ({
     await prefetchMovieDetail(id);
     router.push(`/movies/${id}`);
   };
-  const MovieSkeleton = ({ limit = 20 }) =>
-    Array.from({ length: limit }).map((_, i) => <MovieCardSkeleton key={i} />);
 
   return (
     <>
@@ -113,7 +72,7 @@ const HomeClient: React.FC<{ initialRandomIndex: number }> = ({
                 className='lg:flex-1'
                 size='lg'
                 onClick={() =>
-                  router.push(`/movies/trailer/${trending?.[randomIndex]?.id}`)
+                  router.push(`/movies/trailer/${trending?.[mixedIdx]?.id}`)
                 }
               >
                 Watch Trailer
@@ -123,7 +82,7 @@ const HomeClient: React.FC<{ initialRandomIndex: number }> = ({
                 variant='outline'
                 size='lg'
                 className='lg:flex-1 bg-neutral-950'
-                onClick={() => onClickMovie(trending?.[randomIndex]?.id)}
+                onClick={() => onClickMovie(trending?.[mixedIdx]?.id)}
               >
                 See Detail
               </Button>
@@ -186,7 +145,7 @@ const HomeClient: React.FC<{ initialRandomIndex: number }> = ({
           >
             <ShowOrSkeleton
               isLoading={moviesLoading}
-              skeleton={<MovieSkeleton />}
+              skeleton={<MappingMovieSkeleton />}
             >
               {movies?.map(({ poster_path, title, vote_average, id }, idx) => (
                 <MovieCard
@@ -208,7 +167,7 @@ const HomeClient: React.FC<{ initialRandomIndex: number }> = ({
                   </MovieCard.Content>
                 </MovieCard>
               ))}
-              {isFetchingNextPage && <MovieSkeleton />}
+              {isFetchingNextPage && <MappingMovieSkeleton />}
             </ShowOrSkeleton>
           </div>
         </div>
