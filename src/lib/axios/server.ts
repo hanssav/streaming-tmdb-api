@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const apiServer = axios.create({
-  baseURL: process.env.NEXT_TMDB_PUBLIC_API || 'https://api.themoviedb.org/3',
+  baseURL: process.env.NEXT_TMDB_PUBLIC_API,
   timeout: 10000,
   headers: {
     accept: 'application/json',
