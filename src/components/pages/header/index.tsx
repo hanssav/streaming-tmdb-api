@@ -1,106 +1,46 @@
 'use client';
-import { APIConfiguration, IMAGES, PATH } from '@/lib/constants';
+import { IMAGES, PATH } from '@/lib/constants';
 import { getSafeImage, handleImageError } from '@/lib/utils';
 import { LucidePlayCircle } from 'lucide-react';
 import React from 'react';
 import { Button } from '../../ui/button';
 import { SearchMotion } from './search-layout';
 import SectionWrapper from '../../container/section-wrapper';
-import {
-  movieKeys,
-  useAddToFavorites,
-  useAllFavorites,
-  useInfiniteSearch,
-  usePrefetchMovieDetail,
-} from '@/hooks/useMovies';
 import { Card } from '../favorite/card';
 import { TypographySub, TypographyTitle } from '../../ui/typography';
 import { Movie } from '@/types';
-import { useDebounce } from '@/hooks/useDebounce';
 import EmptyData from '../../container/empty-data';
 import { NO_DATA_FOUND } from '@/lib/constants/empty-data';
 import { HeaderLayout } from './header-layout';
-import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
+import {
+  useInfiniteScroll,
+  useMovieFavorites,
+  useMovieNavigation,
+  useMovieSearch,
+} from './hooks';
 
 const Header = () => {
   const router = useRouter();
-  const account_id = APIConfiguration.mock_account_id;
-  const [filter, setFilter] = React.useState<{ query: string }>({
-    query: '',
+
+  const {
+    movies,
+    searchValue: filter,
+    onSearch,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useMovieSearch();
+
+  const { loadMoreRef } = useInfiniteScroll({
+    hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage,
   });
-  const debounceQuery = useDebounce(filter, 300);
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useInfiniteSearch({ query: debounceQuery.query });
+  const { isFavorite, onChangeFavorite, addToFavorite } = useMovieFavorites();
 
-  const movies = data?.pages.flatMap((page) => page.results) ?? [];
-  const loadMoreRef = React.useRef<HTMLDivElement | null>(null);
-
-  React.useEffect(() => {
-    if (!hasNextPage || !loadMoreRef.current || isFetchingNextPage) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
-          fetchNextPage();
-        }
-      },
-      { threshold: 0.5 }
-    );
-
-    observer.observe(loadMoreRef.current);
-    return () => observer.disconnect();
-  }, [hasNextPage, fetchNextPage, isFetchingNextPage]);
-
-  console.log(movies, 'data');
-
-  const onSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFilter((prev) => ({
-      ...prev,
-      query: e.target.value,
-      page: 1,
-    }));
-  };
-  const addToFavorite = useAddToFavorites();
-  const queryClient = useQueryClient();
-  const { data: favoriteData } = useAllFavorites();
-
-  const onChangeFavorite = (id: number, favorited: boolean) => {
-    if (!id) return;
-    return addToFavorite.mutate(
-      {
-        account_id,
-        body: {
-          media_type: 'movie',
-          media_id: id,
-          favorite: favorited ? false : true,
-        },
-      },
-      {
-        onSuccess: () => {
-          queryClient.invalidateQueries({
-            queryKey: movieKeys.allFavorites(account_id),
-            refetchType: 'all',
-          });
-        },
-      }
-    );
-  };
-
-  const favoriteIds = React.useMemo(() => {
-    if (!Array.isArray(favoriteData)) return new Set<number>();
-    return new Set(favoriteData.map((movie: Movie) => movie.id));
-  }, [favoriteData]);
-
-  const isFavorite = React.useCallback(
-    (movieId: number): boolean => {
-      return favoriteIds.has(movieId);
-    },
-    [favoriteIds]
-  );
-
-  const { prefetchMovieDetail } = usePrefetchMovieDetail();
+  const { navigateToDetail } = useMovieNavigation();
 
   return (
     <HeaderLayout.Root>
@@ -122,8 +62,7 @@ const Header = () => {
                       <Card.CardMovie
                         key={`${movie.id}-${idx}`}
                         onClick={async () => {
-                          await prefetchMovieDetail(movie.id);
-                          router.push(`/movies/${movie.id}`);
+                          navigateToDetail(movie.id);
                         }}
                       >
                         <div className='flex gap-6'>
