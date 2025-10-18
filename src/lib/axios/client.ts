@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const apiClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || '/api',
+  baseURL: process.env.NEXT_TMDB_PUBLIC_API || '/api',
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
