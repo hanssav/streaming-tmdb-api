@@ -92,9 +92,10 @@ const Header = () => {
                             <Button
                               className='hidden lg:flex p-2'
                               size='lg'
-                              onClick={() =>
-                                router.push(`/movies/trailer/${movie.id}`)
-                              }
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                router.push(`/movies/trailer/${movie.id}`);
+                              }}
                             >
                               Watch Trailer
                               <LucidePlayCircle />
@@ -119,9 +120,10 @@ const Header = () => {
                           <Button
                             className='flex-1 p-2'
                             size='lg'
-                            onClick={() =>
-                              router.push(`/movies/trailer/${movie.id}`)
-                            }
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              router.push(`/movies/trailer/${movie.id}`);
+                            }}
                           >
                             Watch Trailer
                             <LucidePlayCircle />
