@@ -10,8 +10,8 @@ import {
   movieKeys,
   useAddToFavorites,
   useAllFavorites,
+  useInfiniteSearch,
   usePrefetchMovieDetail,
-  useSearchMovies,
 } from '@/hooks/useMovies';
 import { Card } from '../favorite/card';
 import { TypographySub, TypographyTitle } from '../../ui/typography';
@@ -26,12 +26,34 @@ import { useRouter } from 'next/navigation';
 const Header = () => {
   const router = useRouter();
   const account_id = APIConfiguration.mock_account_id;
-  const [filter, setFilter] = React.useState<{ query: string; page: number }>({
+  const [filter, setFilter] = React.useState<{ query: string }>({
     query: '',
-    page: 1,
   });
   const debounceQuery = useDebounce(filter, 300);
-  const { data } = useSearchMovies(debounceQuery);
+
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useInfiniteSearch({ query: debounceQuery.query });
+
+  const movies = data?.pages.flatMap((page) => page.results) ?? [];
+  const loadMoreRef = React.useRef<HTMLDivElement | null>(null);
+
+  React.useEffect(() => {
+    if (!hasNextPage || !loadMoreRef.current || isFetchingNextPage) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      { threshold: 0.5 }
+    );
+
+    observer.observe(loadMoreRef.current);
+    return () => observer.disconnect();
+  }, [hasNextPage, fetchNextPage, isFetchingNextPage]);
+
+  console.log(movies, 'data');
 
   const onSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFilter((prev) => ({
@@ -94,41 +116,69 @@ const Header = () => {
           <SearchMotion.Layout>
             <SectionWrapper>
               <div className='space-y-6'>
-                {data?.results?.length ? (
-                  data.results.map((movie: Movie) => (
-                    <Card.CardMovie
-                      key={movie.id}
-                      onClick={async () => {
-                        await prefetchMovieDetail(movie.id);
-                        router.push(`/movies/${movie.id}`);
-                      }}
-                    >
-                      <div className='flex gap-6'>
-                        <Card.Image
-                          src={getSafeImage(
-                            movie.poster_path,
-                            IMAGES.DEFAULT_PROFILE,
-                            PATH.TMDB_IMAGES_URL
-                          )}
-                          onError={handleImageError(IMAGES.DEFAULT_PROFILE)}
-                          alt={`poster-${movie.original_title}`}
-                        />
+                {movies.length ? (
+                  <>
+                    {movies.map((movie: Movie, idx) => (
+                      <Card.CardMovie
+                        key={`${movie.id}-${idx}`}
+                        onClick={async () => {
+                          await prefetchMovieDetail(movie.id);
+                          router.push(`/movies/${movie.id}`);
+                        }}
+                      >
+                        <div className='flex gap-6'>
+                          <Card.Image
+                            src={getSafeImage(
+                              movie.poster_path,
+                              IMAGES.DEFAULT_PROFILE,
+                              PATH.TMDB_IMAGES_URL
+                            )}
+                            onError={handleImageError(IMAGES.DEFAULT_PROFILE)}
+                            alt={`poster-${movie.original_title}`}
+                          />
 
-                        <Card.Content className='space-y-2 lg:space-y-6'>
-                          <TypographyTitle
-                            label={movie.title}
-                            size='md'
-                            lgSize='display-xs'
+                          <Card.Content className='space-y-2 lg:space-y-6'>
+                            <TypographyTitle
+                              label={movie.title}
+                              size='md'
+                              lgSize='display-xs'
+                            />
+                            <Card.RatingWithValue value={movie.vote_average} />
+                            <TypographySub
+                              label={movie.overview}
+                              className='line-clamp-2'
+                              size='sm'
+                              lgSize='md'
+                            />
+                            <Button
+                              className='hidden lg:flex p-2'
+                              size='lg'
+                              onClick={() =>
+                                router.push(`/movies/trailer/${movie.id}`)
+                              }
+                            >
+                              Watch Trailer
+                              <LucidePlayCircle />
+                            </Button>
+                          </Card.Content>
+                          <Card.HeartButton
+                            isFavorited={isFavorite(movie.id)}
+                            onChange={(e) => {
+                              e.stopPropagation();
+                              onChangeFavorite(movie.id, isFavorite(movie.id));
+                            }}
+                            isLoading={
+                              addToFavorite.isPending &&
+                              addToFavorite.variables?.body.media_id ===
+                                movie.id
+                            }
+                            className='hidden lg:flex size-16 aspect-square self-center lg:ml-auto'
                           />
-                          <Card.RatingWithValue value={movie.vote_average} />
-                          <TypographySub
-                            label={movie.overview}
-                            className='line-clamp-2'
-                            size='sm'
-                            lgSize='md'
-                          />
+                        </div>
+
+                        <Card.Actions className='lg:hidden'>
                           <Button
-                            className='hidden lg:flex p-2'
+                            className='flex-1 p-2'
                             size='lg'
                             onClick={() =>
                               router.push(`/movies/trailer/${movie.id}`)
@@ -137,46 +187,34 @@ const Header = () => {
                             Watch Trailer
                             <LucidePlayCircle />
                           </Button>
-                        </Card.Content>
-                        <Card.HeartButton
-                          isFavorited={isFavorite(movie.id)}
-                          onChange={(e) => {
-                            e.stopPropagation();
-                            onChangeFavorite(movie.id, isFavorite(movie.id));
-                          }}
-                          isLoading={
-                            addToFavorite.isPending &&
-                            addToFavorite.variables?.body.media_id === movie.id
-                          }
-                          className='hidden lg:flex size-16 aspect-square self-center lg:ml-auto'
-                        />
+                          <Card.HeartButton
+                            isFavorited={isFavorite(movie.id)}
+                            isLoading={
+                              addToFavorite.isPending &&
+                              addToFavorite.variables?.body.media_id ===
+                                movie.id
+                            }
+                            onChange={(e) => {
+                              e.stopPropagation();
+                              onChangeFavorite(movie.id, isFavorite(movie.id));
+                            }}
+                          />
+                        </Card.Actions>
+                      </Card.CardMovie>
+                    ))}
+                    {hasNextPage && (
+                      <div
+                        ref={loadMoreRef}
+                        className='h-20 flex items-center justify-center'
+                      >
+                        {isFetchingNextPage && (
+                          <p className='text-center text-sm text-gray-400'>
+                            Loading more...
+                          </p>
+                        )}
                       </div>
-
-                      <Card.Actions className='lg:hidden'>
-                        <Button
-                          className='flex-1 p-2'
-                          size='lg'
-                          onClick={() =>
-                            router.push(`/movies/trailer/${movie.id}`)
-                          }
-                        >
-                          Watch Trailer
-                          <LucidePlayCircle />
-                        </Button>
-                        <Card.HeartButton
-                          isFavorited={isFavorite(movie.id)}
-                          isLoading={
-                            addToFavorite.isPending &&
-                            addToFavorite.variables?.body.media_id === movie.id
-                          }
-                          onChange={(e) => {
-                            e.stopPropagation();
-                            onChangeFavorite(movie.id, isFavorite(movie.id));
-                          }}
-                        />
-                      </Card.Actions>
-                    </Card.CardMovie>
-                  ))
+                    )}
+                  </>
                 ) : (
                   <EmptyData
                     {...NO_DATA_FOUND}

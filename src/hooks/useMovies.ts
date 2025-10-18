@@ -15,7 +15,7 @@ export const movieKeys = {
   discover: (params?: DiscoverMoviesParams) =>
     ['movies', 'discover', params] as const,
   detail: (id: number) => ['movies', 'detail', id] as const,
-  search: (query: string, page: number) =>
+  search: (query?: string, page?: number) =>
     ['movies', 'search', query, page] as const,
   credits: (movie_id: number) => ['movies', 'credits', movie_id] as const,
   addFavorite: () => ['favorites', 'add'] as const,
@@ -89,19 +89,20 @@ export const useMovieDetail = (id: number, enabled: boolean = true) => {
   });
 };
 
-export const useSearchMovies = ({
-  query,
-  page = 1,
-}: {
-  query: string;
-  page?: number;
-}) => {
-  return useQuery({
-    queryKey: movieKeys.search(query, page),
-    queryFn: () => movieApi.searchMovies(query, page),
+export const useInfiniteSearch = ({ query }: { query: string }) => {
+  return useInfiniteQuery({
+    queryKey: movieKeys.search(query),
+    queryFn: ({ pageParam = 1 }) => movieApi.searchMovies(query, pageParam),
+    getNextPageParam: (lastPage) => {
+      if (!lastPage || !lastPage.page || !lastPage.total_pages)
+        return undefined;
+      return lastPage.page < lastPage.total_pages
+        ? lastPage.page + 1
+        : undefined;
+    },
+    initialPageParam: 1,
     enabled: query.length > 0,
     staleTime: 5 * 60 * 1000,
-    placeholderData: keepPreviousData,
   });
 };
 

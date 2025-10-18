@@ -38,27 +38,26 @@ Hero.Image = ({
   className,
   ...props
 }: HeroImageProps) => (
-  <AnimatePresence mode='wait'>
-    <motion.div
-      key={src}
-      initial={{ opacity: 0, scale: 1.05 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.9, ease: 'easeOut' }}
-      className={cn(
-        'w-full h-[392px] lg:h-[810px] overflow-hidden relative',
-        className
-      )}
-    >
-      <FlexibleImage
-        src={src}
-        alt={alt}
-        fit={fit}
-        className='w-full h-full object-[center_80%] object-cover'
-        {...props}
-      />
-    </motion.div>
-  </AnimatePresence>
+  <div className='overflow-hidden'>
+    <AnimatePresence mode='wait'>
+      <motion.div
+        key={src}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.6, ease: 'easeOut' }}
+        className={cn('w-full h-[392px] lg:h-[810px] relative', className)}
+      >
+        <FlexibleImage
+          src={src}
+          alt={alt}
+          fit={fit}
+          className='w-full h-full object-[center_80%] object-cover'
+          {...props}
+        />
+      </motion.div>
+    </AnimatePresence>
+  </div>
 );
 
 Hero.Image.displayName = 'Hero.Image';

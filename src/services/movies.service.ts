@@ -25,7 +25,7 @@ export const movieApi = {
     return response.data;
   },
 
-  searchMovies: async (query: string, page: number = 1) => {
+  searchMovies: async (query?: string, page?: number) => {
     const response = await apiClient.get('/movies/search', {
       params: { query, page },
     });
