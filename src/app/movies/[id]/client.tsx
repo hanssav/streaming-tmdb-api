@@ -32,6 +32,9 @@ const DetailClient: React.FC<{ id: number }> = ({ id }) => {
     release_date = '',
     belongs_to_collection,
     poster_path,
+    vote_average,
+    genres,
+    adult,
   } = data || {};
 
   const { data: credits } = useMovvieCreditDetail(id);
@@ -76,7 +79,12 @@ const DetailClient: React.FC<{ id: number }> = ({ id }) => {
                   onWatchTrailer={() => router.push(`/movies/trailer/${id}`)}
                   className='hidden lg:flex lg:max-w-[220px]'
                 />
-                <ItemsCardMapping className='hidden lg:flex' />
+                <ItemsCardMapping
+                  className='hidden lg:flex'
+                  rating={vote_average}
+                  genres={genres}
+                  adult={adult}
+                />
               </div>
             </div>
 
@@ -86,7 +94,11 @@ const DetailClient: React.FC<{ id: number }> = ({ id }) => {
               onChange={onFavoriteChange}
               onWatchTrailer={() => router.push(`/movies/trailer/${id}`)}
             />
-            <ItemsCardMapping />
+            <ItemsCardMapping
+              rating={vote_average}
+              genres={genres}
+              adult={adult}
+            />
           </Hero.Content>
         </Hero>
       </ShowOrSkeleton>
