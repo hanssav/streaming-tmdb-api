@@ -1,20 +1,17 @@
-import { Hero, ShowOrSkeleton } from '@/components/container';
+import { Hero } from '@/components/container';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Heart, LucidePlayCircle } from 'lucide-react';
-import { Spin } from '../skeleton';
 
 const HeroAction: React.FC<{
   isFavorited: boolean;
   onChange: () => void;
   className?: string;
-  isLoading: boolean;
   onWatchTrailer: () => void;
 }> = ({
   isFavorited = false,
   onChange,
   className = 'lg:hidden',
-  isLoading,
   onWatchTrailer,
 }) => {
   return (
@@ -31,16 +28,14 @@ const HeroAction: React.FC<{
           'rounded-full flex items-center justify-center relative size-11'
         )}
       >
-        <ShowOrSkeleton isLoading={isLoading} skeleton={<Spin />}>
-          <Heart
-            className={cn(
-              'absolute size-6 transition-all duration-300',
-              isFavorited
-                ? 'stroke-primary-300 fill-primary-300'
-                : 'stroke-gray-300'
-            )}
-          />
-        </ShowOrSkeleton>
+        <Heart
+          className={cn(
+            'absolute size-6 transition-all duration-300',
+            isFavorited
+              ? 'stroke-primary-300 fill-primary-300'
+              : 'stroke-gray-300'
+          )}
+        />
       </button>
     </Hero.Actions>
   );

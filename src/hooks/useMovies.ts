@@ -1,7 +1,7 @@
 import { useToast } from '@/context/toast';
 import { APIConfiguration } from '@/lib/constants';
 import { movieApi } from '@/services';
-import { DiscoverMoviesParams, FavoriteBody } from '@/types';
+import { DiscoverMoviesParams, FavoriteBody, Movie } from '@/types';
 import {
   useQuery,
   useMutation,
@@ -133,12 +133,49 @@ export const useAddToFavorites = () => {
     }) => {
       return movieApi.addToFavorite(account_id, body);
     },
+
+    onMutate: async ({ body }) => {
+      const movie_id = body.media_id;
+      await queryClient.cancelQueries({
+        queryKey: movieKeys.allFavorites(movie_id),
+      });
+
+      const previousMovie = queryClient.getQueryData(
+        movieKeys.allFavorites(movie_id)
+      );
+
+      queryClient.setQueryData(
+        movieKeys.allFavorites(movie_id),
+        (old: Movie) => {
+          if (!old) return old;
+          return {
+            ...old,
+            is_favorited: body.favorite,
+          };
+        }
+      );
+
+      return { previousMovie, movie_id };
+    },
+
     onSuccess: () => {
       showToast('Successfully updated favorite status!', 'success');
-      queryClient.invalidateQueries({ queryKey: movieKeys.allFavorites() });
     },
-    onError: () => {
+
+    onError: (_, __, context) => {
+      if (context?.previousMovie) {
+        queryClient.setQueryData(
+          movieKeys.allFavorites(context.movie_id),
+          context.previousMovie
+        );
+      }
       showToast('Failed to update favorite status.', 'error');
+    },
+
+    onSettled: (_, __, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: movieKeys.allFavorites(variables.body.media_id),
+      });
     },
   });
 };

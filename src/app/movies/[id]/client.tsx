@@ -23,7 +23,7 @@ import { useUpdateData } from './hooks';
 
 const DetailClient: React.FC<{ id: number }> = ({ id }) => {
   const router = useRouter();
-  const { isFavorited, onFavoriteChange, addToFavorite } = useUpdateData(id);
+  const { isFavorited, onFavoriteChange } = useUpdateData(id);
   const { data, isLoading } = useMovieDetail(id);
   const {
     title = '',
@@ -75,7 +75,6 @@ const DetailClient: React.FC<{ id: number }> = ({ id }) => {
                 <HeroAction
                   isFavorited={isFavorited}
                   onChange={onFavoriteChange}
-                  isLoading={addToFavorite.isPending}
                   onWatchTrailer={() => router.push(`/movies/trailer/${id}`)}
                   className='hidden lg:flex lg:max-w-[220px]'
                 />
@@ -90,7 +89,6 @@ const DetailClient: React.FC<{ id: number }> = ({ id }) => {
 
             <HeroAction
               isFavorited={isFavorited}
-              isLoading={addToFavorite.isPending}
               onChange={onFavoriteChange}
               onWatchTrailer={() => router.push(`/movies/trailer/${id}`)}
             />

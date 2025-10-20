@@ -1,4 +1,3 @@
-import { ShowOrSkeleton } from '@/components/container';
 import FlexibleImage, {
   FlexibleImageProps,
 } from '@/components/container/image-wrapper';
@@ -6,7 +5,6 @@ import { TypographySub } from '@/components/ui/typography';
 import { cn } from '@/lib/utils';
 import { Heart, Star } from 'lucide-react';
 import { ComponentPropsWithoutRef } from 'react';
-import { Spin } from '../skeleton';
 
 const CardMovie: React.FC<
   {
@@ -75,9 +73,8 @@ const HeartButton: React.FC<{
   className?: string;
   isFavorited?: boolean;
   onChange?: (e: React.MouseEvent<HTMLButtonElement>) => void;
-  isLoading: boolean;
   currentLoadingId?: number | string;
-}> = ({ className, isFavorited, onChange, isLoading }) => {
+}> = ({ className, isFavorited, onChange }) => {
   return (
     <button
       type='button'
@@ -88,16 +85,14 @@ const HeartButton: React.FC<{
         className
       )}
     >
-      <ShowOrSkeleton isLoading={isLoading} skeleton={<Spin />}>
-        <Heart
-          className={cn(
-            'absolute size-6 transition-all duration-300',
-            isFavorited
-              ? 'stroke-primary-300 fill-primary-300'
-              : 'stroke-gray-300'
-          )}
-        />
-      </ShowOrSkeleton>
+      <Heart
+        className={cn(
+          'absolute size-6 transition-all duration-300',
+          isFavorited
+            ? 'stroke-primary-300 fill-primary-300'
+            : 'stroke-gray-300'
+        )}
+      />
     </button>
   );
 };

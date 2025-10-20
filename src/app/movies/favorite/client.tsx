@@ -16,8 +16,7 @@ import { usePrefetchMovieDetail } from '@/hooks/useMovies';
 import { useRouter } from 'next/navigation';
 
 const FavoriteClient = () => {
-  const { data, isFavorited, isLoading, onChangeFavorite, addToFavorite } =
-    useFavorite();
+  const { data, isFavorited, isLoading, onChangeFavorite } = useFavorite();
   const { prefetchMovieDetail } = usePrefetchMovieDetail();
   const router = useRouter();
 
@@ -78,10 +77,6 @@ const FavoriteClient = () => {
                   e.stopPropagation();
                   onChangeFavorite(fav.id);
                 }}
-                isLoading={
-                  addToFavorite.isPending &&
-                  addToFavorite.variables?.body.media_id === fav.id
-                }
                 className='hidden lg:flex size-16 aspect-square self-center lg:ml-auto'
               />
             </div>
@@ -104,10 +99,6 @@ const FavoriteClient = () => {
                   e.stopPropagation();
                   onChangeFavorite(fav.id);
                 }}
-                isLoading={
-                  addToFavorite.isPending &&
-                  addToFavorite.variables?.body.media_id === fav.id
-                }
               />
             </Card.Actions>
           </Card.CardMovie>
