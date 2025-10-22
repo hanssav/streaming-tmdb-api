@@ -133,48 +133,54 @@ export const useAddToFavorites = () => {
     }) => {
       return movieApi.addToFavorite(account_id, body);
     },
+    onMutate: async ({ account_id, body }) => {
+      await Promise.all([
+        queryClient.cancelQueries({
+          queryKey: movieKeys.allFavorites(account_id),
+        }),
+        queryClient.cancelQueries({
+          queryKey: movieKeys.allFavorites(body.media_id),
+        }),
+      ]);
 
-    onMutate: async ({ body }) => {
-      const movie_id = body.media_id;
-      await queryClient.cancelQueries({
-        queryKey: movieKeys.allFavorites(movie_id),
-      });
-
-      const previousMovie = queryClient.getQueryData(
-        movieKeys.allFavorites(movie_id)
+      const previousList = queryClient.getQueryData<Movie[]>(
+        movieKeys.allFavorites(account_id)
       );
 
-      queryClient.setQueryData(
-        movieKeys.allFavorites(movie_id),
-        (old: Movie) => {
-          if (!old) return old;
-          return {
-            ...old,
-            is_favorited: body.favorite,
-          };
-        }
-      );
+      if (previousList) {
+        queryClient.setQueryData<Partial<Movie>[]>(
+          movieKeys.allFavorites(account_id),
+          (old) => {
+            if (!old) return old;
 
-      return { previousMovie, movie_id };
+            if (body.favorite) {
+              const exists = old.some((m) => m.id === body.media_id);
+              if (exists) return old;
+              return [...old, { id: body.media_id, is_favorited: true }];
+            } else {
+              const newList = old.filter((m) => m.id !== body.media_id);
+              return newList;
+            }
+          }
+        );
+      }
+      return { previousList, account_id };
     },
-
     onSuccess: () => {
       showToast('Successfully updated favorite status!', 'success');
     },
-
     onError: (_, __, context) => {
-      if (context?.previousMovie) {
+      if (context?.previousList) {
         queryClient.setQueryData(
-          movieKeys.allFavorites(context.movie_id),
-          context.previousMovie
+          movieKeys.allFavorites(context.account_id),
+          context.previousList
         );
       }
       showToast('Failed to update favorite status.', 'error');
     },
-
     onSettled: (_, __, variables) => {
       queryClient.invalidateQueries({
-        queryKey: movieKeys.allFavorites(variables.body.media_id),
+        queryKey: movieKeys.allFavorites(variables.account_id),
       });
     },
   });

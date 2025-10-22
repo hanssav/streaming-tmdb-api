@@ -10,19 +10,27 @@ export const useUpdateData = (id: number) => {
   const [localFavorited, setLocalFavorited] = React.useState<boolean | null>(
     null
   );
+  const isFirstRender = React.useRef(true);
 
   React.useEffect(() => {
-    if (movie?.id !== undefined && localFavorited === null) {
-      setLocalFavorited(movie.id);
+    if (movie?.is_favorited !== undefined && localFavorited === null) {
+      setLocalFavorited(movie.is_favorited);
     }
-  }, [movie?.id, localFavorited]);
+  }, [movie?.is_favorited, localFavorited]);
 
   const isFavorited = localFavorited ?? movie?.is_favorited ?? false;
 
   const onFavoriteChange = () => {
-    const newStatus = !isFavorited;
+    setLocalFavorited((prev) => !prev);
+  };
 
-    setLocalFavorited(newStatus);
+  React.useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+
+    if (localFavorited === null) return;
 
     addToFavorite.mutate(
       {
@@ -30,16 +38,17 @@ export const useUpdateData = (id: number) => {
         body: {
           media_type: 'movie',
           media_id: id,
-          favorite: newStatus,
+          favorite: localFavorited,
         },
       },
       {
         onError: () => {
-          setLocalFavorited(!newStatus);
+          setLocalFavorited((prev) => !prev);
         },
       }
     );
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [localFavorited]);
 
   return {
     isFavorited,

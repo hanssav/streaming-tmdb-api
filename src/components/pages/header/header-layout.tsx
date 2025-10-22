@@ -14,6 +14,7 @@ type HeaderContextValue = {
   isScrolled: boolean;
   isOpenMenu: boolean;
   isSearchMode: boolean;
+  isPending: boolean;
   setOpenMenu: React.Dispatch<React.SetStateAction<boolean>>;
   setIsSearchMode: React.Dispatch<React.SetStateAction<boolean>>;
   goHome: () => void;
@@ -41,6 +42,7 @@ const HeaderRoot = ({ children }: HeaderRootProps) => {
   const { isOpenMenu, setOpenMenu, isScrolled, isSearchMode, setIsSearchMode } =
     useHeader();
   const router = useRouter();
+  const [isPending, startTransition] = React.useTransition();
 
   const clearLayout = React.useCallback(() => {
     setOpenMenu(false);
@@ -49,8 +51,17 @@ const HeaderRoot = ({ children }: HeaderRootProps) => {
 
   React.useEffect(() => clearLayout(), [pathname, clearLayout]);
 
-  const goHome = () => (router.push('/home'), clearLayout());
-  const goFavorite = () => (router.push('/movies/favorite'), clearLayout());
+  const goHome = () => {
+    startTransition(() => {
+      router.push('/home');
+    });
+  };
+
+  const goFavorite = () => {
+    startTransition(() => {
+      router.push('/movies/favorite');
+    });
+  };
 
   return (
     <HeaderContext.Provider
@@ -62,6 +73,7 @@ const HeaderRoot = ({ children }: HeaderRootProps) => {
         setIsSearchMode,
         goHome,
         goFavorite,
+        isPending,
       }}
     >
       {children}
