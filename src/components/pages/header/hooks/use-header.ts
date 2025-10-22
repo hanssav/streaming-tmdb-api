@@ -1,4 +1,5 @@
-import * as React from 'react';
+import { usePathname } from "next/navigation";
+import * as React from "react";
 
 /**
  * Lock or unlock body scroll when `isLocked` changes.
@@ -6,16 +7,16 @@ import * as React from 'react';
 export function useHideOverflow(isLocked: boolean) {
   React.useEffect(() => {
     if (isLocked) {
-      document.body.style.overflow = 'hidden';
-      document.body.style.touchAction = 'none';
+      document.body.style.overflow = "hidden";
+      document.body.style.touchAction = "none";
     } else {
-      document.body.style.overflow = '';
-      document.body.style.touchAction = '';
+      document.body.style.overflow = "";
+      document.body.style.touchAction = "";
     }
 
     return () => {
-      document.body.style.overflow = '';
-      document.body.style.touchAction = '';
+      document.body.style.overflow = "";
+      document.body.style.touchAction = "";
     };
   }, [isLocked]);
 }
@@ -24,6 +25,7 @@ export function useHideOverflow(isLocked: boolean) {
  * Manage header state (menu open, scroll state, search mode, etc.)
  */
 export function useHeader() {
+  const pathname = usePathname();
   const [isOpenMenu, setOpenMenu] = React.useState(false);
   const [isScrolled, setIsScrolled] = React.useState(false);
   const [isSearchMode, setIsSearchMode] = React.useState(false);
@@ -33,9 +35,18 @@ export function useHeader() {
   // Detect scroll
   React.useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 10);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const clearLayout = React.useCallback(() => {
+    setOpenMenu(false);
+    setIsSearchMode(false);
+  }, [setIsSearchMode, setOpenMenu]);
+
+  React.useEffect(() => {
+    clearLayout();
+  }, [pathname, clearLayout]);
 
   return {
     isOpenMenu,
@@ -43,5 +54,6 @@ export function useHeader() {
     isScrolled,
     isSearchMode,
     setIsSearchMode,
+    clearLayout,
   };
 }

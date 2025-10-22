@@ -1,17 +1,17 @@
-import { useRouter } from 'next/navigation';
-import { usePrefetchMovieDetail } from '@/hooks/useMovies';
+import { usePrefetchMovieDetail } from "@/hooks/useMovies";
+import { useRoutingWithNProgress } from "@/hooks/useRoutingWithNProgress";
 
 export const useMovieNavigation = () => {
-  const router = useRouter();
+  const { push } = useRoutingWithNProgress();
   const { prefetchMovieDetail } = usePrefetchMovieDetail();
 
   const navigateToDetail = async (movieId: number) => {
     await prefetchMovieDetail(movieId);
-    router.push(`/movies/${movieId}`);
+    push(`/movies/${movieId}`);
   };
 
   const navigateToTrailer = (movieId: number) => {
-    router.push(`/movies/trailer/${movieId}`);
+    push(`/movies/trailer/${movieId}`);
   };
 
   return {

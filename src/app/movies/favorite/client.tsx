@@ -1,27 +1,27 @@
-'use client';
-import { SectionWrapper, ShowOrSkeleton } from '@/components/container';
-import EmptyData from '@/components/container/empty-data';
-import { Card } from '@/components/pages/favorite/card';
-import { FavoriteCardSkeleton } from '@/components/pages/skeleton';
-import { Button } from '@/components/ui/button';
-import { TypographySub, TypographyTitle } from '@/components/ui/typography';
-import { IMAGES, PATH } from '@/lib/constants';
-import { EMPTY_DATA } from '@/lib/constants/empty-data';
-import { getSafeImage, handleImageError } from '@/lib/utils';
-import { Movie } from '@/types';
-import { LucidePlayCircle } from 'lucide-react';
-import React from 'react';
-import { useFavorite } from './hooks';
-import { usePrefetchMovieDetail } from '@/hooks/useMovies';
-import { useRouter } from 'next/navigation';
+"use client";
+import { SectionWrapper, ShowOrSkeleton } from "@/components/container";
+import EmptyData from "@/components/container/empty-data";
+import { Card } from "@/components/pages/favorite/card";
+import { FavoriteCardSkeleton } from "@/components/pages/skeleton";
+import { Button } from "@/components/ui/button";
+import { TypographySub, TypographyTitle } from "@/components/ui/typography";
+import { IMAGES, PATH } from "@/lib/constants";
+import { EMPTY_DATA } from "@/lib/constants/empty-data";
+import { getSafeImage, handleImageError } from "@/lib/utils";
+import { Movie } from "@/types";
+import { LucidePlayCircle } from "lucide-react";
+import React from "react";
+import { useFavorite } from "./hooks";
+import { usePrefetchMovieDetail } from "@/hooks/useMovies";
+import { useRoutingWithNProgress } from "@/hooks/useRoutingWithNProgress";
 
 const FavoriteClient = () => {
   const { data, isFavorited, isLoading, onChangeFavorite } = useFavorite();
+  const { push } = useRoutingWithNProgress();
   const { prefetchMovieDetail } = usePrefetchMovieDetail();
-  const router = useRouter();
 
   return (
-    <SectionWrapper className='space-y-6 pt-6'>
+    <SectionWrapper className="space-y-6 pt-6">
       <ShowOrSkeleton
         isLoading={isLoading}
         skeletonCount={5}
@@ -33,38 +33,30 @@ const FavoriteClient = () => {
             key={fav.id}
             onClick={async () => {
               await prefetchMovieDetail(fav.id);
-              router.push(fav.id.toString());
+              push(fav.id.toString());
             }}
           >
-            <div className='flex gap-6'>
+            <div className="flex gap-6">
               <Card.Image
-                src={getSafeImage(
-                  fav.poster_path,
-                  IMAGES.DEFAULT_PROFILE,
-                  PATH.TMDB_IMAGES_URL
-                )}
+                src={getSafeImage(fav.poster_path, IMAGES.DEFAULT_PROFILE, PATH.TMDB_IMAGES_URL)}
                 onError={handleImageError(IMAGES.DEFAULT_PROFILE)}
                 alt={`poster-${fav.original_title}`}
               />
-              <Card.Content className='space-y-2 lg:space-y-6'>
-                <TypographyTitle
-                  label={fav.title}
-                  size='md'
-                  lgSize='display-xs'
-                />
+              <Card.Content className="space-y-2 lg:space-y-6">
+                <TypographyTitle label={fav.title} size="md" lgSize="display-xs" />
                 <Card.RatingWithValue value={fav.vote_average} />
                 <TypographySub
                   label={fav.overview}
-                  className='line-clamp-2'
-                  size='sm'
-                  lgSize='md'
+                  className="line-clamp-2"
+                  size="sm"
+                  lgSize="md"
                 />
                 <Button
-                  className='hidden lg:flex p-2'
-                  size='lg'
+                  className="hidden lg:flex p-2"
+                  size="lg"
                   onClick={(e) => {
                     e.stopPropagation();
-                    router.push(`/movies/trailer/${fav.id}`);
+                    push(`/movies/trailer/${fav.id}`);
                   }}
                 >
                   Watch Trailer
@@ -77,17 +69,17 @@ const FavoriteClient = () => {
                   e.stopPropagation();
                   onChangeFavorite(fav.id);
                 }}
-                className='hidden lg:flex size-16 aspect-square self-center lg:ml-auto'
+                className="hidden lg:flex size-16 aspect-square self-center lg:ml-auto"
               />
             </div>
 
-            <Card.Actions className='lg:hidden'>
+            <Card.Actions className="lg:hidden">
               <Button
-                className='flex-1 p-2'
-                size='lg'
+                className="flex-1 p-2"
+                size="lg"
                 onClick={(e) => {
                   e.stopPropagation();
-                  router.push(`/movies/trailer/${fav.id}`);
+                  push(`/movies/trailer/${fav.id}`);
                 }}
               >
                 Watch Trailer

@@ -236,6 +236,9 @@ module.exports = {
       pattern: /^leading-\[.+\]$/,
       variants: ['sm', 'md', 'lg', 'xl', '2xl'],
     },
+    {
+      pattern: /^(nprogress|bar|peg|spinner)/,
+    },
   ],
   theme: {
     extend: {

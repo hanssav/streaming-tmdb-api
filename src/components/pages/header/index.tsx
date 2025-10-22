@@ -1,28 +1,21 @@
-'use client';
-import { IMAGES, PATH } from '@/lib/constants';
-import { getSafeImage, handleImageError } from '@/lib/utils';
-import { LucidePlayCircle } from 'lucide-react';
-import React from 'react';
-import { Button } from '../../ui/button';
-import { SearchMotion } from './search-layout';
-import SectionWrapper from '../../container/section-wrapper';
-import { Card } from '../favorite/card';
-import { TypographySub, TypographyTitle } from '../../ui/typography';
-import { Movie } from '@/types';
-import EmptyData from '../../container/empty-data';
-import { NO_DATA_FOUND } from '@/lib/constants/empty-data';
-import { HeaderLayout } from './header-layout';
-import { useRouter } from 'next/navigation';
-import {
-  useInfiniteScroll,
-  useMovieFavorites,
-  useMovieNavigation,
-  useMovieSearch,
-} from './hooks';
+"use client";
+import { IMAGES, PATH } from "@/lib/constants";
+import { getSafeImage, handleImageError } from "@/lib/utils";
+import { LucidePlayCircle } from "lucide-react";
+import React from "react";
+import { Button } from "../../ui/button";
+import { SearchMotion } from "./search-layout";
+import SectionWrapper from "../../container/section-wrapper";
+import { Card } from "../favorite/card";
+import { TypographySub, TypographyTitle } from "../../ui/typography";
+import { Movie } from "@/types";
+import EmptyData from "../../container/empty-data";
+import { NO_DATA_FOUND } from "@/lib/constants/empty-data";
+import { HeaderLayout } from "./header-layout";
+import { useInfiniteScroll, useMovieFavorites, useMovieNavigation, useMovieSearch } from "./hooks";
+import { useRoutingWithNProgress } from "@/hooks/useRoutingWithNProgress";
 
 const Header = () => {
-  const router = useRouter();
-
   const {
     movies,
     searchValue: filter,
@@ -39,8 +32,8 @@ const Header = () => {
   });
 
   const { isFavorite, onChangeFavorite } = useMovieFavorites();
-
   const { navigateToDetail } = useMovieNavigation();
+  const { push } = useRoutingWithNProgress();
 
   return (
     <HeaderLayout.Root>
@@ -48,14 +41,14 @@ const Header = () => {
         <HeaderLayout.Mobile />
 
         <HeaderLayout.Desktop>
-          <HeaderLayout.Logo className='hidden lg:block' />
-          <HeaderLayout.Nav className='hidden lg:flex' />
+          <HeaderLayout.Logo className="hidden lg:block" />
+          <HeaderLayout.Nav className="hidden lg:flex" />
         </HeaderLayout.Desktop>
 
         <HeaderLayout.Search onSearch={onSearch} searchValue={filter.query}>
           <SearchMotion.Layout>
             <SectionWrapper>
-              <div className='space-y-6'>
+              <div className="space-y-6">
                 {movies.length ? (
                   <>
                     {movies.map((movie: Movie, idx) => (
@@ -65,36 +58,32 @@ const Header = () => {
                           navigateToDetail(movie.id);
                         }}
                       >
-                        <div className='flex gap-6'>
+                        <div className="flex gap-6">
                           <Card.Image
                             src={getSafeImage(
                               movie.poster_path,
                               IMAGES.DEFAULT_PROFILE,
-                              PATH.TMDB_IMAGES_URL
+                              PATH.TMDB_IMAGES_URL,
                             )}
                             onError={handleImageError(IMAGES.DEFAULT_PROFILE)}
                             alt={`poster-${movie.original_title}`}
                           />
 
-                          <Card.Content className='space-y-2 lg:space-y-6'>
-                            <TypographyTitle
-                              label={movie.title}
-                              size='md'
-                              lgSize='display-xs'
-                            />
+                          <Card.Content className="space-y-2 lg:space-y-6">
+                            <TypographyTitle label={movie.title} size="md" lgSize="display-xs" />
                             <Card.RatingWithValue value={movie.vote_average} />
                             <TypographySub
                               label={movie.overview}
-                              className='line-clamp-2'
-                              size='sm'
-                              lgSize='md'
+                              className="line-clamp-2"
+                              size="sm"
+                              lgSize="md"
                             />
                             <Button
-                              className='hidden lg:flex p-2'
-                              size='lg'
+                              className="hidden lg:flex p-2"
+                              size="lg"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                router.push(`/movies/trailer/${movie.id}`);
+                                push(`/movies/trailer/${movie.id}`);
                               }}
                             >
                               Watch Trailer
@@ -107,17 +96,17 @@ const Header = () => {
                               e.stopPropagation();
                               onChangeFavorite(movie.id, isFavorite(movie.id));
                             }}
-                            className='hidden lg:flex size-16 aspect-square self-center lg:ml-auto'
+                            className="hidden lg:flex size-16 aspect-square self-center lg:ml-auto"
                           />
                         </div>
 
-                        <Card.Actions className='lg:hidden'>
+                        <Card.Actions className="lg:hidden">
                           <Button
-                            className='flex-1 p-2'
-                            size='lg'
+                            className="flex-1 p-2"
+                            size="lg"
                             onClick={(e) => {
                               e.stopPropagation();
-                              router.push(`/movies/trailer/${movie.id}`);
+                              push(`/movies/trailer/${movie.id}`);
                             }}
                           >
                             Watch Trailer
@@ -134,31 +123,20 @@ const Header = () => {
                       </Card.CardMovie>
                     ))}
                     {hasNextPage && (
-                      <div
-                        ref={loadMoreRef}
-                        className='h-20 flex items-center justify-center'
-                      >
+                      <div ref={loadMoreRef} className="h-20 flex items-center justify-center">
                         {isFetchingNextPage && (
-                          <p className='text-center text-sm text-gray-400'>
-                            Loading more...
-                          </p>
+                          <p className="text-center text-sm text-gray-400">Loading more...</p>
                         )}
                       </div>
                     )}
                   </>
                 ) : (
-                  <EmptyData
-                    {...NO_DATA_FOUND}
-                    className='min-h-[calc(100vh-8rem-5rem)]'
-                  />
+                  <EmptyData {...NO_DATA_FOUND} className="min-h-[calc(100vh-8rem-5rem)]" />
                 )}
               </div>
             </SectionWrapper>
           </SearchMotion.Layout>
-          <HeaderLayout.MobileActions
-            onSearch={onSearch}
-            searchValue={filter.query}
-          />
+          <HeaderLayout.MobileActions onSearch={onSearch} searchValue={filter.query} />
         </HeaderLayout.Search>
       </HeaderLayout.Container>
 
