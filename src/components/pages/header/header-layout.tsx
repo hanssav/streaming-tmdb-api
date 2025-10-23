@@ -36,11 +36,17 @@ type HeaderRootProps = {
 };
 
 const HeaderRoot = ({ children }: HeaderRootProps) => {
-  const { isOpenMenu, setOpenMenu, isScrolled, isSearchMode, setIsSearchMode } = useHeader();
+  const { isOpenMenu, setOpenMenu, isScrolled, isSearchMode, setIsSearchMode, clearLayout } =
+    useHeader();
   const { push, isPending: nProgressIsPending } = useRoutingWithNProgress();
 
-  const goHome = () => push("/home");
-  const goFavorite = () => push("/movies/favorite");
+  React.useEffect(() => {
+    if (!nProgressIsPending) clearLayout();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [nProgressIsPending]);
+
+  const goHome = () => push("/home", clearLayout);
+  const goFavorite = () => push("/movies/favorite", clearLayout);
 
   return (
     <HeaderContext.Provider
